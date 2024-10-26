@@ -4,11 +4,8 @@
 
 // Resource: https://docs.svix.com/receiving/verifying-payloads/why
 // It's a good practice to verify webhooks. Above article shows why we should do it
-import { Webhook, WebhookRequiredHeaders } from "svix";
+import { Webhook } from "svix";
 import { headers } from "next/headers";
-
-import { IncomingHttpHeaders } from "http";
-
 import { NextResponse } from "next/server";
 import {
   addMemberToCommunity,
@@ -35,31 +32,63 @@ type Event = {
 };
 
 export const POST = async (request: Request) => {
+  const rawRequest = await request.text(); // Capture raw body for debugging
+  console.log('Raw request body:', rawRequest);
+  // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
+  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+  if (!WEBHOOK_SECRET) {
+    throw new Error('Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local');
+  }
+  
+  // Get the headers
+  const headerPayload = headers();
+  const svix_id = headerPayload.get('svix-id')
+  const svix_timestamp = headerPayload.get('svix-timestamp')
+  const svix_signature = headerPayload.get('svix-signature')
+
+  // If there are no headers, error out
+  if (!svix_id || !svix_timestamp || !svix_signature) {
+  const missingHeaders = [];
+  if (!svix_id) missingHeaders.push('svix-id');
+  if (!svix_timestamp) missingHeaders.push('svix-timestamp');
+  if (!svix_signature) missingHeaders.push('svix-signature');
+
+  console.log('Missing headers:', missingHeaders.join(', '));
+  console.log('Received headers:', Array.from(headerPayload.entries()));
+  return new Response('Error occurred -- no svix headers', {
+    status: 400,
+  });
+}
+  
+  // Get the body
   const payload = await request.json();
-  const header = headers();
+  const body = JSON.stringify(payload);
 
-  const heads = {
-    "svix-id": header.get("svix-id"),
-    "svix-timestamp": header.get("svix-timestamp"),
-    "svix-signature": header.get("svix-signature"),
-  };
-
-  // Activitate Webhook in the Clerk Dashboard.
-  // After adding the endpoint, you'll see the secret on the right side.
-  const wh = new Webhook(process.env.NEXT_CLERK_WEBHOOK_SECRET || "");
+  // Create a new Svix instance with your secret.
+  const wh = new Webhook(WEBHOOK_SECRET)
 
   let evnt: Event | null = null;
-
   try {
     evnt = wh.verify(
       JSON.stringify(payload),
-      heads as IncomingHttpHeaders & WebhookRequiredHeaders
-    ) as Event;
+      {
+        'svix-id': svix_id,
+        'svix-timestamp': svix_timestamp,
+        'svix-signature': svix_signature,
+      }) as Event;
   } catch (err) {
     return NextResponse.json({ message: err }, { status: 400 });
   }
 
   const eventType: EventType = evnt?.type!;
+
+  // Do something with the payload
+  // For this guide, you simply log the payload to the console
+  const { id } = evnt.data
+  const eventTypes = evnt.type
+  console.log(`Webhook with and ID of ${id} and type of ${eventTypes}`);
+  console.log('Webhook body:', body);
+  
 
   // Listen organization creation event
   if (eventType === "organization.created") {
@@ -69,6 +98,7 @@ export const POST = async (request: Request) => {
       evnt?.data ?? {};
 
     try {
+      console.log("Event creation is in progress...")
       // @ts-ignore
       await createCommunity(
         // @ts-ignore
