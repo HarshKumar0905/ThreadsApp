@@ -32,8 +32,8 @@ type Event = {
 };
 
 export const POST = async (request: Request) => {
-  const rawRequest = await request.text(); // Capture raw body for debugging
-  console.log('Raw request body:', rawRequest);
+  //const rawRequest = await request.text(); // Capture raw body for debugging
+  //console.log('Raw request body:', rawRequest);
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
   if (!WEBHOOK_SECRET) {
