@@ -88,6 +88,7 @@ export const POST = async (request: Request) => {
 
   // Listen organization creation event
   if (eventType === "organization.created") {
+    console.log("-------------------------HELLO 1-------------------------")
     // Resource: https://clerk.com/docs/reference/backend-api/tag/Organizations#operation/CreateOrganization
     // Show what evnt?.data sends from above resource
     const { id, name, slug, logo_url, image_url, created_by } =
@@ -120,6 +121,7 @@ export const POST = async (request: Request) => {
   // Just to show. You can avoid this or tell people that we can create a new mongoose action and
   // add pending invites in the database.
   if (eventType === "organizationInvitation.created") {
+    console.log("-------------------------HELLO 2-------------------------")
     try {
       // Resource: https://clerk.com/docs/reference/backend-api/tag/Organization-Invitations#operation/CreateOrganizationInvitation
       console.log("Invitation created", evnt?.data);
@@ -140,6 +142,7 @@ export const POST = async (request: Request) => {
 
   // Listen organization membership (member invite & accepted) creation
   if (eventType === "organizationMembership.created") {
+    console.log("-------------------------HELLO 3-------------------------")
     try {
       // Resource: https://clerk.com/docs/reference/backend-api/tag/Organization-Memberships#operation/CreateOrganizationMembership
       // Show what evnt?.data sends from above resource
@@ -165,6 +168,7 @@ export const POST = async (request: Request) => {
 
   // Listen member deletion event
   if (eventType === "organizationMembership.deleted") {
+    console.log("-------------------------HELLO 4-------------------------")
     try {
       // Resource: https://clerk.com/docs/reference/backend-api/tag/Organization-Memberships#operation/DeleteOrganizationMembership
       // Show what evnt?.data sends from above resource
@@ -187,6 +191,7 @@ export const POST = async (request: Request) => {
 
   // Listen organization updation event
   if (eventType === "organization.updated") {
+    console.log("-------------------------HELLO 5-------------------------")
     try {
       // Resource: https://clerk.com/docs/reference/backend-api/tag/Organizations#operation/UpdateOrganization
       // Show what evnt?.data sends from above resource
@@ -209,6 +214,7 @@ export const POST = async (request: Request) => {
 
   // Listen organization deletion event
   if (eventType === "organization.deleted") {
+    console.log("-------------------------HELLO 6-------------------------")
     try {
       // Resource: https://clerk.com/docs/reference/backend-api/tag/Organizations#operation/DeleteOrganization
       // Show what evnt?.data sends from above resource
@@ -217,9 +223,7 @@ export const POST = async (request: Request) => {
       console.log("id ", id)
 
       // @ts-ignore
-      const a = 1;
-
-      await deleteCommunity(id as string);
+      await deleteCommunity(id);
 
       return NextResponse.json(
         { message: "Organization deleted" },
