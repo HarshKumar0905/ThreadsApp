@@ -4,6 +4,8 @@
 
 // Resource: https://docs.svix.com/receiving/verifying-payloads/why
 // It's a good practice to verify webhooks. Above article shows why we should do it
+export const dynamic = "force-dynamic";
+
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -32,9 +34,6 @@ type Event = {
 };
 
 export const POST = async (request: Request) => {
-  //const rawRequest = await request.text(); // Capture raw body for debugging
-  //console.log('Raw request body:', rawRequest);
-  // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
   if (!WEBHOOK_SECRET) {
     throw new Error('Please add CLERK_WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local');
@@ -85,9 +84,6 @@ export const POST = async (request: Request) => {
   // Do something with the payload
   // For this guide, you simply log the payload to the console
   const { id } = evnt.data
-  const eventTypes = evnt.type
-  console.log(`Webhook with and ID of ${id} and type of ${eventTypes}`);
-  console.log('Webhook body:', body);
   
 
   // Listen organization creation event
