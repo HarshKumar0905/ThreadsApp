@@ -271,8 +271,25 @@ export async function updateCommunityInfo(
 
 export async function deleteCommunity(communityId: string) {
   try {
-    connectToDB();
+    await connectToDB();
 
+    const community : any = await Community.find({id : communityId}, {new : true});
+    const communityID = await community?._id;
+    
+    // Delete all threads associated with the community
+    await Thread.deleteMany({ community : communityID });
+    
+    // Find all users who are part of the community
+    const communityUsers = await User.find({ communities : communityID });
+    
+    // Remove the community from the 'communities' array for each user
+    const updateUserPromises = communityUsers.map((user) => {
+      user.communities.pull(communityID);
+      return user.save();
+    });
+    
+    await Promise.all(updateUserPromises);
+    
     // Find the community by its ID and delete it
     const deletedCommunity = await Community.findOneAndDelete({
       id: communityId,
@@ -281,21 +298,6 @@ export async function deleteCommunity(communityId: string) {
     if (!deletedCommunity) {
       throw new Error("Community not found");
     }
-
-    // Delete all threads associated with the community
-    await Thread.deleteMany({ community: communityId });
-
-    // Find all users who are part of the community
-    const communityUsers = await User.find({ communities: communityId });
-
-    // Remove the community from the 'communities' array for each user
-    const updateUserPromises = communityUsers.map((user) => {
-      user.communities.pull(communityId);
-      return user.save();
-    });
-
-    await Promise.all(updateUserPromises);
-
     return deletedCommunity;
   } catch (error) {
     console.error("Error deleting community: ", error);
