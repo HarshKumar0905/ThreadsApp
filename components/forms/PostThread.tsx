@@ -74,7 +74,7 @@ const PostThread = ({ userId }: { userId: string }) => {
   return (
       <form
         onSubmit={onSubmitHandler}
-        className="mt-8 flex flex-col justify-start gap-10 overflow-x-hidden"
+        className="mt-8 flex flex-col justify-start gap-10 overflow-hidden"
       >
         <div className="flex flex-col w-full gap-2">
           <p className="text-base-semibold text-light-2">
@@ -87,7 +87,7 @@ const PostThread = ({ userId }: { userId: string }) => {
           onChange={(e)=>{ setThread(e.target.value); setWordError(null); }} value={thread}></textarea>
         </div>
 
-        <div className="flex gap-10 flex-row-reverse">
+        <div className="flex gap-10 flex-row-reverse mb-4">
           <button type="submit" className="bg-primary-500 text-white font-bold px-6 rounded-xl"
           disabled={loading}>
             Submit

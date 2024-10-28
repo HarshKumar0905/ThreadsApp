@@ -26,7 +26,7 @@ export default async function RootLayout({
         <Topbar />
         <main className='flex'>
           <LeftSidebar/>
-          <section className='main-container w-screen'>
+          <section className='main-container w-screen h-screen'>
             <div className='w-full max-w-4xl'>
               {children}
             </div>
