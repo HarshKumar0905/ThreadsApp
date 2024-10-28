@@ -1,21 +1,11 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import * as z from "zod"
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel, FormMessage
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import { usePathname, useRouter } from "next/navigation";
 import { ThreadValidation } from "@/lib/validations/thread";
 import { createThread } from "@/lib/actions/thread.actions";
 import { useOrganization } from "@clerk/nextjs";
+import { run } from "@/lib/validations/generator";
+import { useState } from "react";
 
 interface Props {
   user: {
@@ -28,61 +18,94 @@ interface Props {
   };
   btnTitle: string;
 }
-const PostThread = ({userId} : {userId : string}) => {
-
+const PostThread = ({ userId }: { userId: string }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { organization } = useOrganization();
+  const [thread, setThread] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [wordError, setWordError] = useState<string | null>(null);
 
-  const form = useForm({
-    resolver: zodResolver(ThreadValidation),
-    defaultValues: {
-      thread : "",
-      accountId : userId
-    },
-  });
+  const onSubmitHandler = async (e : any) => {
+    e.preventDefault();
+    setWordError(null);
+    const wordCount = thread.trim().length;
+    if (wordCount < 3) {
+      setWordError("Please enter at least 3 words.");
+      return;
+    }
 
-  const onSubmit = async (values : z.infer<typeof ThreadValidation>) => {
-    createThread({
-      text : values.thread,
-      author : userId,
-      communityId : organization ? organization.id : null,
-      path : pathname
-    });
+    try {
+      const formData = new FormData();
+      formData.append("name", thread);
 
-    router.push('/');
-  }
+      createThread({
+        text: thread,
+        author: userId,
+        communityId: organization ? organization.id : null,
+        path: pathname,
+      });
+  
+      router.push("/");
+    } catch (error) {
+      throw new Error(`Error in creating thread as ${error}`);
+    }
+  };
+  const handleAI = async () => {
+    setWordError(null);
+    console.log("Word : ", thread.trim().length)
+    const wordCount = thread.trim().length;
+    if (wordCount < 3) {
+      setWordError("Please enter at least 3 words.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const result = await run(thread + 
+        "---> modify this prompt to sound catchy, treat it as a social media post, keep it's length medium and also don't include options/steps as it doen't look good");
+      setThread(result);
+    } catch (error: any) {
+      throw new Error(`GEMINI didn't function properly as ${error}`);
+    }
+    setLoading(false);
+  };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} 
-      className="mt-10 flex flex-col justify-start gap-10">
+      <form
+        onSubmit={onSubmitHandler}
+        className="mt-8 flex flex-col justify-start gap-10"
+      >
+        <div className="flex flex-col w-full gap-2">
+          <p className="text-base-semibold text-light-2">
+            Content
+          </p>
+          {wordError && <p className="text-red-500 -mt-1">{wordError}</p>}
+          <textarea rows={15} cols={50} placeholder="Type your thread here..."
+          className="no-focus bg-dark-3 text-light-1 rounded-xl p-2
+          border-2 border-gray-400"
+          onChange={(e)=>{ setThread(e.target.value); setWordError(null); }} value={thread}></textarea>
+        </div>
 
-        <FormField
-          control={form.control}
-          name="thread"
-          render={({ field }) => (
-            <FormItem className="flex flex-col w-full gap-1">
-              <FormLabel className="text-base-semibold text-light-2">
-                Content
-              </FormLabel>
-              <FormControl className="no-focus border border-dark-4 bg-dark-3 text-light-1">
-                <Textarea rows={15}
-                placeholder="Create your thread"
-                {...field} />
-              </FormControl>
-              <FormMessage/>
-            </FormItem>
-          )}
-        />
+        <div className="flex gap-10 flex-row-reverse">
+          <button type="submit" className="bg-primary-500 text-white font-bold px-6 rounded-xl"
+          disabled={loading}>
+            Submit
+          </button>
 
-        <Button type="submit" className="bg-primary-500 text-white font-bold">
-          Submit
-        </Button>
+          <div className="relative inline-flex group">
+            <div className="absolute transitiona-all duration-1000 opacity-70 -inset-px bg-gradient-to-r 
+            from-[#44BCFF] via-[#FF44EC] to-[#FF675E] rounded-xl blur-lg group-hover:opacity-100
+            group-hover:-inset-1 group-hover:duration-200 animate-tilt"></div>
+            <div className="relative inline-flex items-center justify-center px-8 py-2 text-lg font-bold
+            text-white transition-all duration-200 bg-gray-900 font-pj rounded-xl focus:outline-none 
+            focus:ring-2 focus:ring-offset-2 focus:ring-gray-900" onClick={() => handleAI()}>
+            {loading ? "Modifying with AI..." : "Modify with AI"}
+            </div>
+            </div>
+        </div> 
       </form>
-    </Form>
   );
-
-}
+};
 
 export default PostThread;

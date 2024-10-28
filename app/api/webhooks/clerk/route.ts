@@ -142,7 +142,6 @@ export const POST = async (request: Request) => {
 
   // Listen organization membership (member invite & accepted) creation
   if (eventType === "organizationMembership.created") {
-    console.log("-------------------------HELLO 3-------------------------")
     try {
       // Resource: https://clerk.com/docs/reference/backend-api/tag/Organization-Memberships#operation/CreateOrganizationMembership
       // Show what evnt?.data sends from above resource

@@ -127,6 +127,7 @@ const ThreadCard = ({
         {/* TODO : Delete Thread */}
         {/* TODO : Show comment logos */}
 
+      </div>
         {!isComment && community && (
           <Link href={`/communities/${community.id}`}
           className="mt-5 flex items-center">
@@ -138,7 +139,6 @@ const ThreadCard = ({
               width={14} height={14} className="ml-1 rounded-full object-cover"/>
           </Link>
         )}
-      </div>
     </article>
   );
 };
