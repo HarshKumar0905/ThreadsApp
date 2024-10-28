@@ -87,7 +87,7 @@ const PostThread = ({ userId }: { userId: string }) => {
           onChange={(e)=>{ setThread(e.target.value); setWordError(null); }} value={thread}></textarea>
         </div>
 
-        <div className="flex gap-10 flex-row-reverse mb-4">
+        <div className="flex gap-10 flex-row-reverse mb-6">
           <button type="submit" className="bg-primary-500 text-white font-bold px-6 rounded-xl"
           disabled={loading}>
             Submit
