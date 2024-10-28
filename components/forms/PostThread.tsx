@@ -74,7 +74,7 @@ const PostThread = ({ userId }: { userId: string }) => {
   return (
       <form
         onSubmit={onSubmitHandler}
-        className="mt-8 flex flex-col justify-start gap-10"
+        className="mt-8 flex flex-col justify-start gap-10 overflow-x-hidden"
       >
         <div className="flex flex-col w-full gap-2">
           <p className="text-base-semibold text-light-2">
