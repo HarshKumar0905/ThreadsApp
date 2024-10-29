@@ -1,11 +1,12 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { ThreadValidation } from "@/lib/validations/thread";
 import { createThread } from "@/lib/actions/thread.actions";
 import { useOrganization } from "@clerk/nextjs";
 import { run } from "@/lib/validations/generator";
 import { useState } from "react";
+import Lottie from "lottie-react";
+import aiEffect from "../../public/assets/aiEffect.json"
 
 interface Props {
   user: {
@@ -88,7 +89,7 @@ const PostThread = ({ userId }: { userId: string }) => {
         </div>
 
         <div className="flex gap-10 flex-row-reverse mb-6">
-          <button type="submit" className="bg-primary-500 text-white font-bold px-6 rounded-xl"
+          <button type="submit" className="bg-primary-500 text-white font-bold px-4 rounded-xl"
           disabled={loading}>
             Submit
           </button>
@@ -97,10 +98,15 @@ const PostThread = ({ userId }: { userId: string }) => {
             <div className="absolute transitiona-all duration-1000 opacity-70 -inset-px bg-gradient-to-r 
             from-[#44BCFF] via-[#FF44EC] to-[#FF675E] rounded-xl blur-lg group-hover:opacity-100
             group-hover:-inset-1 group-hover:duration-200 animate-tilt"></div>
-            <div className="relative inline-flex items-center justify-center px-8 py-2 text-lg font-bold
+            <div className="relative inline-flex items-center justify-center px-4 py-2 text-lg font-bold
             text-white transition-all duration-200 bg-gray-900 font-pj rounded-xl focus:outline-none 
             focus:ring-2 focus:ring-offset-2 focus:ring-gray-900" onClick={() => handleAI()}>
-            {loading ? "Modifying with AI..." : "Modify with AI"}
+            {
+              loading ? 
+              <div className="flex items-center gap-1">
+                Modifying with AI <Lottie animationData={aiEffect} loop={true} className="size-5"/>
+              </div>: "Modify with AI"
+            }
             </div>
             </div>
         </div> 

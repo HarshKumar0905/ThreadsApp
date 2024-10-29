@@ -1,13 +1,7 @@
 import UserCard from "@/components/cards/UserCard";
-import ProfileHeader from "@/components/shared/ProfileHeader";
 import Searchbar from "@/components/shared/Searchbar";
-import ThreadsTab from "@/components/shared/ThreadsTab";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { profileTabs } from "@/constants";
 import { fetchUser, fetchUsers } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs/server";
-import { TabsContent } from "@radix-ui/react-tabs";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 
 const Page = async ({

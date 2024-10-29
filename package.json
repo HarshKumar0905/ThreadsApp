@@ -24,6 +24,7 @@
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "lottie-react": "^2.4.0",
     "lucide-react": "^0.453.0",
     "mongoose": "^8.7.2",
     "next": "14.2.15",
