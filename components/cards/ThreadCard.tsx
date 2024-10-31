@@ -94,13 +94,6 @@ const ThreadCard = ({
                 {author?.id === currentUserId && <ModalDelete content={content} id={id} parentId={parentId}/>}
               </div>
 
-              {isComment && comments.length > 0 && (
-                <Link href={`/thread/${id}`}>
-                  <p className="mt-1 text-subtle-medium text-gray-1">
-                    {comments.length} replied
-                  </p>
-                </Link>
-              )}
             </div>
           </div>
         </div>
