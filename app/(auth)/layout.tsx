@@ -3,6 +3,8 @@ import "../globals.css";
 import {
   ClerkProvider
 } from "@clerk/nextjs";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export const metadata = {
   title: "Threads",
@@ -26,6 +28,9 @@ export default function RootLayout({
         min-h-screen">
           {children}
         </div>
+        <ToastContainer autoClose={4000} position="top-right"
+        hideProgressBar = {false} closeOnClick = {true}
+        pauseOnHover = {true} draggable = {true} theme = "colored"/>
         </ClerkProvider>
       </body>
     </html>

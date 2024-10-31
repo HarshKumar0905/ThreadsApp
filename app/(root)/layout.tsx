@@ -5,6 +5,9 @@ import Topbar from '@/components/shared/Topbar'
 import LeftSidebar from '@/components/shared/LeftSidebar'
 import RightSidebar from '@/components/shared/RightSidebar'
 import Bottombar from '@/components/shared/Bottombar'
+import { ToastContainer} from 'react-toastify';
+import { NextUIProvider } from '@nextui-org/react';
+import 'react-toastify/dist/ReactToastify.css';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,6 +26,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ClerkProvider>
+        <NextUIProvider >
         <Topbar />
         <main className='flex'>
           <LeftSidebar/>
@@ -33,7 +37,11 @@ export default async function RootLayout({
           </section>
           <RightSidebar />
         </main>
+        <ToastContainer autoClose={4000} position="top-right"
+        hideProgressBar = {false} closeOnClick = {true}
+        pauseOnHover = {true} draggable = {true} theme = "colored"/>
         <Bottombar />
+        </NextUIProvider>
         </ClerkProvider>
       </body>
     </html>

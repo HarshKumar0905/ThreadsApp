@@ -7,6 +7,7 @@ import { run } from "@/lib/validations/generator";
 import { useState } from "react";
 import Lottie from "lottie-react";
 import aiEffect from "../../public/assets/aiEffect.json"
+import { toast } from "react-toastify";
 
 interface Props {
   user: {
@@ -46,9 +47,11 @@ const PostThread = ({ userId }: { userId: string }) => {
         communityId: organization ? organization.id : null,
         path: pathname,
       });
+      toast.success("Thread created");
   
       router.push("/");
     } catch (error) {
+      toast.error("Failed creating a thread");
       throw new Error(`Error in creating thread as ${error}`);
     }
   };

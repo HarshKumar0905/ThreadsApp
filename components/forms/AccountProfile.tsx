@@ -20,6 +20,7 @@ import { isBase64Image } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
 import { updateUser } from "@/lib/actions/user.actions";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 interface Props {
   user: {
@@ -79,14 +80,19 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
       }
     }
 
-    await updateUser({
-      username : values.username,
-      name : values.name,
-      userId: user.id, 
-      bio : values.bio,
-      image : values.profile_photo,
-      path : pathname
-  });
+    try {
+      await updateUser({
+        username : values.username,
+        name : values.name,
+        userId: user.id, 
+        bio : values.bio,
+        image : values.profile_photo,
+        path : pathname
+      });
+      toast.success("Onboarded Successfully");
+    } catch (error) {
+      toast.error("Error occured while onboarding");
+    }
 
     if(pathname === '/profile/edit') 
       router.back();

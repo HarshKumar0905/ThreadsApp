@@ -232,6 +232,11 @@ export async function addCommentToThread(
     // Add the comment thread's ID to the original thread's children array
     originalThread.children.push(savedCommentThread._id);
 
+    const user = await User.findById(userId);
+    console.log("user --> ",user);
+    user.threads.push(savedCommentThread._id);
+    await user.save();
+
     // Save the updated original thread to the database
     await originalThread.save();
 
@@ -244,12 +249,14 @@ export async function addCommentToThread(
 
 export async function addLikeToThread(id: String, userId: String) {
   try {
-    connectToDB();
-    await Thread.findByIdAndUpdate(
+    console.log("id : ",id," userId : ",userId);
+    await connectToDB();
+    const thread = await Thread.findByIdAndUpdate(
       id,
       { $push: { likes: userId } },
       { new: true }
     );
+    return thread.likes.length;
   } catch (error: any) {
     throw new Error(`Failed to increment likes ${error.message}`);
   }
@@ -257,13 +264,42 @@ export async function addLikeToThread(id: String, userId: String) {
 
 export async function removeLikeFromThread(id: String, userId: String) {
   try {
-    connectToDB();
-    await Thread.findByIdAndUpdate(
+    await connectToDB();
+    const thread = await Thread.findByIdAndUpdate(
       id,
       { $pull: { likes: userId } },
       { new: true }
     );
+    return thread.likes.length;
   } catch (error: any) {
     throw new Error(`Failed to decrement likes ${error.message}`);
+  }
+}
+
+export async function removeThread(id : String, parentId : String | null) {
+  try {
+    await connectToDB();
+    const deleteThreadRecursively = async (id : String) => {
+      const thread = await Thread.findById(id);
+      if (!thread) return;
+
+      // Delete all child threads
+      if (thread.children.length > 0) {
+          await Promise.all(thread.children.map((childThread : any) => {
+            deleteThreadRecursively(childThread._id)
+      }));
+      }
+
+      // Delete the current thread
+      await User.findByIdAndUpdate(thread.author, { $pull: { threads : id } }, { new: true });
+      await Thread.findByIdAndDelete(id);
+    };
+
+  if(parentId)
+  await Thread.findByIdAndUpdate(parentId,  { $pull: { children: id } }, { new: true });
+
+  await deleteThreadRecursively(id);
+  } catch (error : any) {
+    throw new Error(`Failed to delete the thread ${error.message}`);
   }
 }

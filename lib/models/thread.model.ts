@@ -22,7 +22,7 @@ const threadSchema = new mongoose.Schema({
         type : String
     },
     likes : [{
-        type : mongoose.Schema.Types.ObjectId,
+        type : String,
         ref : 'User',
         default : null,
     }],
