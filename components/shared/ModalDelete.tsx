@@ -5,6 +5,7 @@ import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from "@nextui-
 import { useState } from "react";
 import { ImBin } from "react-icons/im";
 import { toast } from "react-toastify";
+import { IoClose } from "react-icons/io5";
 
 interface Props {
   content : string;
@@ -39,7 +40,12 @@ export default function ModalDelete({content, id, parentId} : Props) {
         <ModalContent>
           {() => (
             <>
-              <ModalHeader className="flex flex-col gap-1">You are about to delete this thread</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 relative">
+                <div className="flex">
+                  <p>You are about to delete this thread</p>
+                  <IoClose className="top-[11px] right-[11px] absolute cursor-pointer" onClick={() => setOnOpen(false)}/>
+                </div>
+              </ModalHeader>
               <ModalBody>
                 <p> 
                   {content}
