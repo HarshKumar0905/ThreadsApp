@@ -8,9 +8,10 @@ import { Input } from "../ui/input";
 
 interface Props {
   routeType: string;
+  callIn: number;
 }
 
-function Searchbar({ routeType }: Props) {
+function Searchbar({ routeType, callIn }: Props) {
   const router = useRouter();
   const [search, setSearch] = useState("");
 
@@ -22,7 +23,7 @@ function Searchbar({ routeType }: Props) {
       } else {
         router.push(`/${routeType}`);
       }
-    }, 300);
+    }, callIn);
 
     return () => clearTimeout(delayDebounceFn);
   }, [search, routeType]);
@@ -41,7 +42,7 @@ function Searchbar({ routeType }: Props) {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder={`${
-          routeType !== "/search" ? "Search communities" : "Search creators"
+          routeType === "/search" ? "Search creators" : "Search among threads"
         }`}
         className='no-focus searchbar_input'
       />
