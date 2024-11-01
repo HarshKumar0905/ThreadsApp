@@ -14,6 +14,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata = {
   title: "Threads",
   description: "A Next.js 13 Meta Threads Application",
+  manifest : "/manifest.json"
 };
 
 export default async function RootLayout({
@@ -24,6 +25,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className={inter.className}>
         <ClerkProvider>
         <NextUIProvider >
