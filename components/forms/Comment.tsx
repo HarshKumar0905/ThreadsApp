@@ -11,11 +11,12 @@ import { toast } from "react-toastify";
 
 interface Props {
   threadId: string;
+  content : string;
   currentUserImage: string;
   currentUserId: string;
 }
 
-const Comment = ({ threadId, currentUserImage, currentUserId }: Props) => {
+const Comment = ({ threadId, content, currentUserImage, currentUserId }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const [thread, setThread] = useState("");
@@ -34,8 +35,8 @@ const Comment = ({ threadId, currentUserImage, currentUserId }: Props) => {
     try {
       setLoading(true);
       const result = await run(
-        thread +
-          "---> modify this prompt to sound catchy, treat it as a social media post, keep it's length medium and also don't include options/steps as it doen't look good"
+        content + " " + thread +
+          "---> comment on the before mentioned text, keep it's length medium and also don't include options/steps as it doen't look good"
       );
       setThread(result);
     } catch (error: any) {
