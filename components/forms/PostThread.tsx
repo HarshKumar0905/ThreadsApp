@@ -111,7 +111,7 @@ const PostThread = ({ userId }: { userId: string }) => {
               </div>: "Modify with AI"
             }
             </div>
-            </div>
+          </div>
         </div> 
       </form>
   );
