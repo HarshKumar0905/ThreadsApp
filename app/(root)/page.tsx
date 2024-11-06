@@ -1,51 +1,62 @@
 "use server"
 
 import ThreadCard from "@/components/cards/ThreadCard";
-import { fetchThreads } from "@/lib/actions/thread.actions";
+import { fetchFrequency, fetchThreads } from "@/lib/actions/thread.actions";
 import { currentUser } from "@clerk/nextjs/server";
 import Searchbar from "@/components/shared/Searchbar";
+import PageComponent from "@/components/ui/PageComponent";
 
 export default async function Home({
   searchParams,
-}: {searchParams: { [key: string]: string | undefined }}) {
-  let result = await fetchThreads(1, 30);
+}: { searchParams: { [key: string]: string | undefined } }) {
+  let count = await fetchFrequency();
+
   const user = await currentUser();
-  console.log("Threads ---> ", result);
+
+  const currentPage = searchParams.p || "1" ;
+  let result = await fetchThreads(Number(currentPage), 5);
+
   const search = searchParams.q;
-  if(search!==undefined){
-    console.log("Search ", search);
-    const newResult = result.threads.filter((thread : any) => 
-      thread.text.toLowerCase().includes(search?.toLowerCase()));
+  if (search !== undefined) {
+    const newResult = result.threads.filter((thread: any) =>
+      thread.text.toLowerCase().includes(search?.toLowerCase())
+    );
     result.threads = newResult;
   }
-    
 
-  
   return (
     <>
-      <div className="sm:flex sm:flex-row justify-between flex flex-col gap-2 sm:gap-0">
-        <h1 className="head-text text-left">Home</h1>
+      <div className="flex flex-col gap-2 ">
+        <div className="flex flex-col sm:flex sm:flex-row items-start sm:items-center w-full justify-between">
+          <h1 className="head-text text-left">Home</h1>
+        </div>
+        <div className="flex justify-center">
+          <PageComponent count={count} routeType="" />
+        </div>
         <div><Searchbar routeType="" callIn={50} /></div>
       </div>
 
       <section className="mt-9 flex flex-col gap-10">
-        {
-          result.threads.length === 0 ? (
+        {result.threads.length === 0 ? (
           <p className="no-result">No threads found</p>
         ) : (
-          <>
-          {
-            result.threads.map((thread) => (
-              <ThreadCard key={thread._id} id={thread._id} 
-              currentUserId={user?.id || ""} parentId={thread.parentId}
-              content={thread.text} author={thread.author} likes={thread.likes}
-              community={thread.community} createdAt={thread.createdAt}
-              comments={thread.children}/>
-            ))
-          }
-          </>
+          result.threads.map((thread: any) => (
+            <ThreadCard
+              key={thread._id}
+              id={thread._id}
+              currentUserId={user?.id || ""}
+              parentId={thread.parentId}
+              content={thread.text}
+              author={thread.author}
+              likes={thread.likes}
+              community={thread.community}
+              createdAt={thread.createdAt}
+              comments={thread.children}
+            />
+          ))
         )}
       </section>
+      
     </>
-  )
+  );
 }

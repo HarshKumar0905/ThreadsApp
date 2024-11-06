@@ -6,7 +6,18 @@ import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
 
-export async function fetchThreads(pageNumber = 1, pageSize = 20) {
+export async function fetchFrequency() {
+  connectToDB();
+
+  try {
+    const count = await Thread.countDocuments({ parentId: { $in: [null, undefined] } });
+    return count;
+  } catch (error: any) {
+    throw new Error(`Failed to find frequency of thread: ${error.message}`);
+  }
+}
+
+export async function fetchThreads(pageNumber = 1, pageSize = 10) {
   connectToDB();
 
   // Calculate the number of posts to skip based on the page number and page size.
