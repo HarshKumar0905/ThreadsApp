@@ -5,6 +5,20 @@ import { connectToDB } from "../mongoose";
 import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
+import Media from "../models/media.model";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import { currentUser } from "@clerk/nextjs/server";
+
+const s3 = new S3Client({
+  region : process.env.AWS_BUCKET_REGION!,
+  credentials : {
+    accessKeyId : process.env.AWS_ACCESS_KEY!,
+    secretAccessKey : process.env.AWS_SECRET_ACCESS_KEY!
+  }
+});
+const acceptedTypes = ["image" , "video"];
+const maxFileSize = 1024 * 1024 * 40;
 
 export async function fetchFrequency() {
   connectToDB();
@@ -43,6 +57,11 @@ export async function fetchThreads(pageNumber = 1, pageSize = 10) {
         model: User,
         select: "_id name parentId image", // Select only _id and username fields of the author
       },
+    })
+    .populate({
+      path : "mediaFiles",
+      select : "type url",
+      model : Media
     });
 
   // Count the total number of top-level posts (threads) i.e., threads that are not comments.
@@ -57,11 +76,18 @@ export async function fetchThreads(pageNumber = 1, pageSize = 10) {
   return { threads, isNext };
 }
 
+export type MediaFileType = {
+  src: string | undefined;
+  type: string;
+  url: string;
+}
+
 interface Params {
   text: string;
   author: string;
   communityId: string | null;
   path: string;
+  mediaFiles : Array<MediaFileType> | null
 }
 
 export async function createThread({
@@ -69,11 +95,11 @@ export async function createThread({
   author,
   communityId,
   path,
+  mediaFiles
 }: Params) {
   try {
     connectToDB();
 
-    console.log("ID : ",communityId);
     const communityIdObject = await Community.findOne(
       { id: communityId },
       { _id: 1 }
@@ -90,6 +116,16 @@ export async function createThread({
       $push: { threads: createdThread._id },
     });
 
+    // Update Media model
+    mediaFiles?.map(async (media) => {
+      const createdFile = await Media.create({
+        type : media.type,
+        url : media.url
+      });
+
+      await Thread.findByIdAndUpdate(createdThread._id, { $push : { mediaFiles : createdFile._id}}, {new : true});
+    });
+
     if (communityIdObject) {
       // Update Community model
       await Community.findByIdAndUpdate(communityIdObject, {
@@ -100,7 +136,7 @@ export async function createThread({
     revalidatePath(path);
   } catch (error: any) {
     throw new Error(`Failed to create thread: ${error.message}`);
-  }
+  }  
 }
 
 async function fetchAllChildThreads(threadId: string): Promise<any[]> {
@@ -244,7 +280,6 @@ export async function addCommentToThread(
     originalThread.children.push(savedCommentThread._id);
 
     const user = await User.findById(userId);
-    console.log("user --> ",user);
     user.threads.push(savedCommentThread._id);
     await user.save();
 
@@ -260,7 +295,6 @@ export async function addCommentToThread(
 
 export async function addLikeToThread(id: String, userId: String) {
   try {
-    console.log("id : ",id," userId : ",userId);
     await connectToDB();
     const thread = await Thread.findByIdAndUpdate(
       id,
@@ -312,5 +346,47 @@ export async function removeThread(id : String, parentId : String | null) {
   await deleteThreadRecursively(id);
   } catch (error : any) {
     throw new Error(`Failed to delete the thread ${error.message}`);
+  }
+}
+
+function generateRandomWord(length : number) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  let randomWord = '';
+  for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      randomWord += characters[randomIndex];
+  }
+  return randomWord;
+}
+
+// This is used to return URL that client can use to send the file to s3
+export async function getSignedURL(type : string, size : number) {
+  try {
+    const user = await currentUser();
+    if(!user) {
+      return { faliure : "User not signed in" };
+    }
+    if(!acceptedTypes.includes(type.substring(0, 5))) {
+      return { faliure : "Invalid file type" };
+    }
+    if(size > maxFileSize) {
+      return { faliure : "File is larger than 40 MB" };
+    }
+    
+    const putObjectCommand = new PutObjectCommand({
+      Bucket : process.env.AWS_BUCKET_NAME!,
+      Key : generateRandomWord(10),
+      ContentType : type,
+      ContentLength : size,
+      Metadata : {
+        userId : user.id,
+      }
+    });
+    const signedURL = await getSignedUrl(s3, putObjectCommand, {
+      expiresIn : 300
+    });
+    return { success : { url : signedURL, viewUrl : signedURL.split("?")[0] } };
+  } catch (error) {
+    return { faliure : "Error occured" };
   }
 }

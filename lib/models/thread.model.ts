@@ -29,6 +29,10 @@ const threadSchema = new mongoose.Schema({
     children : [{
         type : mongoose.Schema.Types.ObjectId,
         ref : 'Thread'
+    }],
+    mediaFiles : [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Media'
     }]
 });
 

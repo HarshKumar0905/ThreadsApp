@@ -1,34 +1,24 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { createThread } from "@/lib/actions/thread.actions";
+import { createThread, getSignedURL, MediaFileType } from "@/lib/actions/thread.actions";
 import { useOrganization } from "@clerk/nextjs";
 import { run } from "@/lib/validations/generator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Lottie from "lottie-react";
 import aiEffect from "../../public/assets/aiEffect.json";
 import { toast } from "react-toastify";
 import upload_area from "@/public/assets/upload_area.png";
 import upload_added from "@/public/assets/upload_added.png";
+import { postMedias } from "@/lib/actions/media.actions";
 
-interface Props {
-  user: {
-    id: string | undefined;
-    objectId: string | undefined;
-    username: string | null | undefined;
-    name: string;
-    bio: string;
-    image: string | undefined;
-  };
-  btnTitle: string;
-}
 const PostThread = ({ userId }: { userId: string }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { organization } = useOrganization();
   const [thread, setThread] = useState("");
   const [loading, setLoading] = useState(false);
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [wordError, setWordError] = useState<string | null>(null);
 
   const handleFileChange = (e: any) => {
@@ -38,36 +28,68 @@ const PostThread = ({ userId }: { userId: string }) => {
   const onSubmitHandler = async (e: any) => {
     e.preventDefault();
     setWordError(null);
-    console.log("Files ----> ", files);
-
+    
     const wordCount = thread.trim().length;
     if (wordCount < 3) {
       setWordError("Please enter at least 3 words.");
       return;
     }
-
+  
     try {
+      let fileObject : Array<MediaFileType> = [];
       const formData = new FormData();
       formData.append("name", thread);
+  
+      // Check if files are being uploaded
+      if (files && files.length > 0) {
+        toast.info("Uploading files...");
+      }
+  
+      // Loop through each file for uploading and posting media
+      let i = 0;
+      while (i < files.length) {
+        const file = files[i];
+        
+        // Get signed URL for file upload
+        const signedURLResult = await getSignedURL(file.type, file.size);
+        const url = signedURLResult?.success?.url;
+        const viewUrl = url?.split("?")[0];
+  
+        if (signedURLResult?.faliure) {
+          toast.error(signedURLResult.faliure);
+          return;
+        }
+  
+        // Upload the file using the signed URL
+        await fetch(url! , {
+          method: "PUT",
+          body: file,
+          headers: { "Content-Type": file.type },
+        });
 
-      createThread({
+        fileObject.push({ type : file.type.substring(0, 5), url : viewUrl! });
+        i++; // Move to the next file
+      }
+
+      // Create thread with necessary data
+      await createThread({
         text: thread,
         author: userId,
         communityId: organization ? organization.id : null,
         path: pathname,
+        mediaFiles : fileObject
       });
-      toast.success("Thread created");
-
+  
+      toast.success("Thread created successfully");
       router.push("/");
     } catch (error) {
       toast.error("Failed creating a thread");
-      throw new Error(`Error in creating thread as ${error}`);
+      console.error("Error in creating thread:", error);
     }
-  };
+  };  
 
   const handleAI = async () => {
     setWordError(null);
-    console.log("Word : ", thread.trim().length);
     const wordCount = thread.trim().length;
     if (wordCount < 3) {
       setWordError("Please enter at least 3 words.");
@@ -138,7 +160,6 @@ const PostThread = ({ userId }: { userId: string }) => {
               return (
                 <img
                   key={index}
-                  className="w-24"
                   src={fileURL}
                   alt={`Image preview ${index + 1}`}
                   className="w-24 h-24 cursor-pointer rounded-lg"
@@ -148,7 +169,6 @@ const PostThread = ({ userId }: { userId: string }) => {
               return (
                 <video
                   key={index}
-                  className="w-24"
                   controls
                   src={fileURL}
                   className="w-24 h-24 cursor-pointer rounded-lg"

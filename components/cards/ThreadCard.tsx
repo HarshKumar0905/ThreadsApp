@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Like from "../shared/Like";
 import ModalDelete from "../shared/ModalDelete";
+import { MediaFileType } from "@/lib/actions/thread.actions";
+import ReactCoursel from "../ui/ReactCoursel";
 
 interface Props {
   id: string;
@@ -26,7 +28,8 @@ interface Props {
     };
   }[];
   likes: string[];
-  isComment?: boolean;
+  isComment?: boolean,
+  mediaFiles : Array<MediaFileType> | null;
 }
 
 const ThreadCard = ({
@@ -40,7 +43,10 @@ const ThreadCard = ({
   comments,
   likes,
   isComment,
+  mediaFiles
 }: Props) => {
+
+  console.log("Saved ---> ", mediaFiles);
 
   return (
     <article className={`flex w-full flex-col rounded-xl 
@@ -68,6 +74,10 @@ const ThreadCard = ({
             </Link>
 
             <p className="mt-2 text-small-regular text-light-2">{content}</p>
+
+            {
+              mediaFiles?.length! && <ReactCoursel mediaFiles={mediaFiles} />
+            }
 
             <div className="mt-3 flex flex-col gap-3">
               <div className="flex gap-3.5 items-center">

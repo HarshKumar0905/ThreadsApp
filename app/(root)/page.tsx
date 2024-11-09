@@ -1,7 +1,7 @@
 "use server"
 
 import ThreadCard from "@/components/cards/ThreadCard";
-import { fetchFrequency, fetchThreads } from "@/lib/actions/thread.actions";
+import { fetchFrequency, fetchThreads, MediaFileType } from "@/lib/actions/thread.actions";
 import { currentUser } from "@clerk/nextjs/server";
 import Searchbar from "@/components/shared/Searchbar";
 import PageComponent from "@/components/ui/PageComponent";
@@ -40,7 +40,7 @@ export default async function Home({
         {result.threads.length === 0 ? (
           <p className="no-result">No threads found</p>
         ) : (
-          result.threads.map((thread: any) => (
+          result.threads.map((thread : any) => (
             <ThreadCard
               key={thread._id}
               id={thread._id}
@@ -52,6 +52,7 @@ export default async function Home({
               community={thread.community}
               createdAt={thread.createdAt}
               comments={thread.children}
+              mediaFiles={thread.mediaFiles}
             />
           ))
         )}
