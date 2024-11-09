@@ -79,7 +79,7 @@ const ThreadCard = ({
               mediaFiles?.length! && <ReactCoursel mediaFiles={mediaFiles} />
             }
 
-            <div className="mt-3 flex flex-col gap-3">
+            <div className={`${mediaFiles?.length! ? `mt-3` : `-mt-3`} flex flex-col gap-3`}>
               <div className="flex gap-3.5 items-center">
                 <Like id={id} likes={likes} currentUserId={currentUserId}/>
 
