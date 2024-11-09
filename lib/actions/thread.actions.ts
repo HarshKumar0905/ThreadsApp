@@ -386,7 +386,7 @@ export async function getSignedURL(type : string, size : number) {
       expiresIn : 300
     });
     return { success : { url : signedURL, viewUrl : signedURL.split("?")[0] } };
-  } catch (error) {
-    return { faliure : "Error occured" };
+  } catch (error : any) {
+    return { faliure : `Error occured  : ${error}` };
   }
 }
