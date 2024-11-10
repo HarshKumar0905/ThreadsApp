@@ -56,7 +56,7 @@ const PostThread = ({ userId }: { userId: string }) => {
         const viewUrl = url?.split("?")[0];
   
         if (signedURLResult?.faliure) {
-          toast.error(signedURLResult.faliure);
+          toast.error(signedURLResult.faliure + "AWS s3 error");
           return;
         }
   
@@ -82,8 +82,8 @@ const PostThread = ({ userId }: { userId: string }) => {
   
       toast.success("Thread created successfully");
       router.push("/");
-    } catch (error) {
-      toast.error("Failed creating a thread");
+    } catch (error : any) {
+      toast.error("Failed creating a thread", error);
       console.error("Error in creating thread:", error);
     }
   };  
