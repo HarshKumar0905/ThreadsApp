@@ -6,9 +6,10 @@ import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
 import Media from "../models/media.model";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { currentUser } from "@clerk/nextjs/server";
+import { ObjectId } from "mongoose";
 
 const s3 = new S3Client({
   region : process.env.AWS_BUCKET_REGION!,
@@ -77,7 +78,6 @@ export async function fetchThreads(pageNumber = 1, pageSize = 10) {
 }
 
 export type MediaFileType = {
-  src: string | undefined;
   type: string;
   url: string;
 }
@@ -241,6 +241,11 @@ export async function fetchThreadById(threadId: string) {
           },
         ],
       })
+      .populate({
+        path : "mediaFiles",
+        select : "type url",
+        model : Media
+      })
       .exec();
 
     return thread;
@@ -324,6 +329,25 @@ export async function removeLikeFromThread(id: String, userId: String) {
 export async function removeThread(id : String, parentId : String | null) {
   try {
     await connectToDB();
+
+    // Find the thread to be deleted (the main thread)
+    const mainThread = await Thread.findById(id);
+
+    // Delete any media associated with the thread
+    mainThread.mediaFiles.map(async (media : ObjectId)=> {
+      // Delete media from db
+      console.log("Deleting Thread");
+      console.log("Media ID : ", media);
+      const mediaItem = await Media.findByIdAndDelete(media, {new : true});
+
+      // Delete media from s3 bucket
+      const deleteObjectCommand = new DeleteObjectCommand({
+        Bucket : process.env.AWS_BUCKET_NAME!,
+        Key : mediaItem.url.split("/").pop()!
+      });
+      await s3.send(deleteObjectCommand);
+    });
+
     const deleteThreadRecursively = async (id : String) => {
       const thread = await Thread.findById(id);
       if (!thread) return;
@@ -335,9 +359,17 @@ export async function removeThread(id : String, parentId : String | null) {
       }));
       }
 
+      // Update community model
+      if(thread.community)
+        await Community.findByIdAndUpdate(thread.community, { $pull: { threads : id } }, { new: true });
+
+      // Update the parent thread
+      await Thread.findByIdAndUpdate(parentId, { $pull: { children : id } }, { new: true })
+
       // Delete the current thread
       await User.findByIdAndUpdate(thread.author, { $pull: { threads : id } }, { new: true });
       await Thread.findByIdAndDelete(id);
+
     };
 
   if(parentId)
