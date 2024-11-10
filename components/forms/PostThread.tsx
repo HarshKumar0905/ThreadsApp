@@ -83,7 +83,7 @@ const PostThread = ({ userId }: { userId: string }) => {
       toast.success("Thread created successfully");
       router.push("/");
     } catch (error : any) {
-      toast.error("Failed creating a thread", error);
+      toast.error("Failed creating a thread", error.toString());
       console.error("Error in creating thread:", error);
     }
   };  
