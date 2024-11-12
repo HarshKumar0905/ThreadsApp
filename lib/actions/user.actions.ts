@@ -7,6 +7,7 @@ import Thread from "../models/thread.model";
 import User from "../models/user.model";
 
 import { connectToDB } from "../mongoose";
+import Media from "../models/media.model";
 
 export async function fetchUser(userId: string) {
   try {
@@ -84,6 +85,11 @@ export async function fetchUserPosts(userId: string) {
             select: "name image id", // Select the "name" and "_id" fields from the "User" model
           },
         },
+        {
+          path: "mediaFiles",
+          model: Media,
+          select : "type url"
+        }
       ],
     });
     return threads;

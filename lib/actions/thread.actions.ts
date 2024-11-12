@@ -139,6 +139,35 @@ export async function createThread({
   }  
 }
 
+interface ParamsEdit {
+  id: string | null;
+  text: string;
+}
+
+export async function editThread({ id, text }: ParamsEdit) {
+  if (!id) {
+    throw new Error("Invalid thread ID");
+  }
+
+  try {
+    await connectToDB(); // Ensure this handles reconnections properly if called multiple times
+
+    const updatedThread = await Thread.findByIdAndUpdate(
+      id,
+      { text: text },
+      { new: true } // Option to return the updated document
+    );
+
+    console.log("New ---> ", updatedThread);
+
+    if (!updatedThread) {
+      throw new Error("Thread not found");
+    }
+  } catch (error: any) {
+    throw new Error(`Failed to edit thread: ${error.message}`);
+  }
+}
+
 async function fetchAllChildThreads(threadId: string): Promise<any[]> {
   const childThreads = await Thread.find({ parentId: threadId });
 
@@ -417,6 +446,7 @@ export async function getSignedURL(type : string, size : number) {
     const signedURL = await getSignedUrl(s3, putObjectCommand, {
       expiresIn : 300
     });
+    console.log("Signed URL --> ", signedURL);
     return { success : { url : signedURL, viewUrl : signedURL.split("?")[0] } };
   } catch (error : any) {
     return { faliure : `Error occured  : ${error}` };

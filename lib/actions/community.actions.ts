@@ -7,6 +7,7 @@ import Thread from "../models/thread.model";
 import User from "../models/user.model";
 
 import { connectToDB } from "../mongoose";
+import Media from "../models/media.model";
 
 export async function createCommunity(
   id: string,
@@ -94,6 +95,11 @@ export async function fetchCommunityPosts(id: string) {
         {
           path : "community",
           model : Community
+        },
+        {
+          path : "mediaFiles",
+          model : Media,
+          select : "type url"
         }
       ],
     });

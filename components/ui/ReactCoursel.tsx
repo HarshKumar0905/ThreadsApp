@@ -8,7 +8,7 @@ interface Props {
 const ReactCoursel = ({mediaFiles} : Props) => {
 
   return (
-    <div className="mt-2 h-56 xl:h-80 2xl:h-96 rounded-lg">
+    <div className="mt-2 xl:-ml-6 h-56 xl:h-80 2xl:h-96 rounded-lg">
       <Carousel slide={false}>
         {mediaFiles?.map((media, index) => (
             <div>

@@ -5,6 +5,8 @@ import Like from "../shared/Like";
 import ModalDelete from "../shared/ModalDelete";
 import { MediaFileType } from "@/lib/actions/thread.actions";
 import ReactCoursel from "../ui/ReactCoursel";
+import { FaEdit } from "react-icons/fa";
+import CopyText from "../shared/CopyText";
 
 interface Props {
   id: string;
@@ -46,8 +48,6 @@ const ThreadCard = ({
   mediaFiles
 }: Props) => {
 
-  console.log("Saved ---> ", mediaFiles);
-
   return (
     <article className={`flex w-full flex-col rounded-xl 
       ${isComment ? 'px-0 xs:px-7 my-2 bg-gray-900 py-3' : 'bg-dark-2 p-7'}`}>
@@ -76,10 +76,10 @@ const ThreadCard = ({
             <p className="mt-2 text-small-regular text-light-2">{content}</p>
 
             {
-              mediaFiles?.length! && <ReactCoursel mediaFiles={mediaFiles} />
+              mediaFiles && mediaFiles.length > 0 && <ReactCoursel mediaFiles={mediaFiles} />
             }
 
-            <div className={`${mediaFiles?.length! ? `mt-3` : `-mt-3`} flex flex-col gap-3`}>
+            <div className={`${(mediaFiles && mediaFiles.length > 0) ? `mt-3` : `mt-1`} flex flex-col gap-3`}>
               <div className="flex gap-3.5 items-center">
                 <Like id={id} likes={likes} currentUserId={currentUserId}/>
 
@@ -92,14 +92,17 @@ const ThreadCard = ({
                   {comments.length>0 && <span className="text-[#5c5c7b]">{comments.length}</span>}
                 </div>
                 
+                {
+                  author?.id === currentUserId && <Link href={`/edit-thread/${id}`}>
+                  <FaEdit width={24}
+                    height={24} className="text-[#5c5c7b] cursor-pointer object-contain grid place-items-center"
+                  />
+                  </Link>
+                }
 
-                <Image src="/assets/repost.svg" alt="heart" width={24}
-                  height={24} className="cursor-pointer object-contain"
-                />
-
-                <Image src="/assets/share.svg" alt="heart" width={24}
-                  height={24} className="cursor-pointer object-contain"
-                />
+                {
+                  <CopyText text={content}/>
+                }
 
                 {author?.id === currentUserId && <ModalDelete content={content} id={id} parentId={parentId}/>}
               </div>

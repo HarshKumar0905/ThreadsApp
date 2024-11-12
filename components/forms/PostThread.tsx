@@ -10,9 +10,10 @@ import aiEffect from "../../public/assets/aiEffect.json";
 import { toast } from "react-toastify";
 import upload_area from "@/public/assets/upload_area.png";
 import upload_added from "@/public/assets/upload_added.png";
-import { postMedias } from "@/lib/actions/media.actions";
+import upload_cancel from "@/public/assets/upload_cancel.png";
+import { editThread } from "@/lib/actions/thread.actions";
 
-const PostThread = ({ userId }: { userId: string }) => {
+const PostThread = ({ userId, action, threadMessage }: { userId: string, action : string, threadMessage: string }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { organization } = useOrganization();
@@ -20,6 +21,12 @@ const PostThread = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [wordError, setWordError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (action === "Edit") {
+      setThread(threadMessage);
+    }
+  }, [action, threadMessage]);
 
   const handleFileChange = (e: any) => {
     setFiles(Array.from(e.target.files));
@@ -36,11 +43,10 @@ const PostThread = ({ userId }: { userId: string }) => {
     }
   
     try {
-      let fileObject : Array<MediaFileType> = [];
-      const formData = new FormData();
-      formData.append("name", thread);
   
-      // Check if files are being uploaded
+      if(action==="Create") {
+        let fileObject : Array<MediaFileType> = [];
+        // Check if files are being uploaded
       if (files && files.length > 0) {
         toast.info("Uploading files...");
       }
@@ -69,18 +75,29 @@ const PostThread = ({ userId }: { userId: string }) => {
 
         fileObject.push({ type : file.type.substring(0, 5), url : viewUrl! });
         i++; // Move to the next file
+        }
+
+        await createThread({
+          text: thread,
+          author: userId,
+          communityId: organization ? organization.id : null,
+          path: pathname,
+          mediaFiles : fileObject
+        });
       }
 
-      // Create thread with necessary data
-      await createThread({
-        text: thread,
-        author: userId,
-        communityId: organization ? organization.id : null,
-        path: pathname,
-        mediaFiles : fileObject
-      });
+      if(action==="Edit")
+      {
+        await editThread({
+          id : userId!,
+          text : thread
+        });
+      } 
   
-      toast.success("Thread created successfully");
+      if(action==="Create")
+        toast.success("Thread created successfully");
+      else
+        toast.success("Thread modified successfully");
       router.push("/");
     } catch (error : any) {
       toast.error("Failed creating a thread", error.toString());
@@ -133,7 +150,12 @@ const PostThread = ({ userId }: { userId: string }) => {
 
       <div className="flex flex-col gap-2">
         <p className="text-base-semibold text-light-2">
-          Upload Images & Videos <span className="text-gray-500 italic ml-5">Preview shown</span>
+          Upload Images & Videos 
+          <span className="text-gray-500 italic ml-5">
+          {
+            action === "Edit" ? "Edit mode does'nt support media files changes" : 'Preview Shown'
+          }
+          </span>
         </p>
 
         {/* Display thumbnails of selected images and videos */}
@@ -144,12 +166,13 @@ const PostThread = ({ userId }: { userId: string }) => {
             id="media"
             accept="image/*,video/*" // Allows both images and videos
             multiple
-            hidden
+            hidden 
+            disabled={action==="Edit"}
           />
           <label htmlFor="media">
             <img
               className="w-24 cursor-pointer rounded-lg"
-              src={files.length > 0 ? upload_added.src : upload_area.src}
+              src={files.length > 0 ? upload_added.src : action==="Edit" ? upload_cancel.src : upload_area.src}
               alt="Upload Preview"
             />
           </label>
