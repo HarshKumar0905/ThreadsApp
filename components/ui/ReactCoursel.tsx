@@ -15,7 +15,7 @@ const ReactCoursel = ({mediaFiles} : Props) => {
             <div>
               {media.type === "image" ? (
                 <div className="flex justify-center items-center m-auto rounded-lg">
-                <Image
+                <img
                   src={media?.url}
                   alt="Image Not Found"
                   className="lg:h-56 xl:h-80 2xl:h-96 m-auto flex justify-center items-center rounded-lg
