@@ -19,7 +19,7 @@ const ReactCoursel = ({mediaFiles} : Props) => {
                   alt="Image Not Found"
                   className="lg:h-56 xl:h-80 2xl:h-96 m-auto flex justify-center items-center rounded-lg
                   border-1.5 border-gray-600"
-                  width={573} height={381} loading="eager"
+                  width={573} height={381} loading="lazy"
                 />
                 </div>
               ) : ( 
