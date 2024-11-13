@@ -19,7 +19,6 @@ const s3 = new S3Client({
   }
 });
 const acceptedTypes = ["image" , "video"];
-
 const maxFileSize = 1024 * 1024 * 70;
 
 export async function fetchFrequency() {
