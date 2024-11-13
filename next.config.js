@@ -21,8 +21,7 @@ const nextConfig = {
       ignoreDuringBuilds: true,
     },
     images: {
-      domains: ['utfs.io', 'uploadthing.com', 'threads-clone-storage.s3.ap-south-1.amazonaws.com'],
-      formats: ['image/webp'],
+      domains: ['utfs.io'],
       remotePatterns: [
         {
           protocol: "https",

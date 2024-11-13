@@ -22,7 +22,7 @@ function CommunityCard({ id, name, username, imgUrl, bio, members }: Props) {
           <Image
             src={imgUrl}
             alt='community_logo'
-            fill
+            fill loading="lazy"
             className='rounded-full object-cover'
           />
         </Link>
@@ -52,7 +52,7 @@ function CommunityCard({ id, name, username, imgUrl, bio, members }: Props) {
                 src={member.image}
                 alt={`user_${index}`}
                 width={28}
-                height={28}
+                height={28} loading="lazy"
                 className={`${
                   index !== 0 && "-ml-2"
                 } rounded-full object-cover w-[28px] h-[28px]`}
