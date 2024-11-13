@@ -60,6 +60,7 @@ const ThreadCard = ({
                 alt="Profile Image"
                 fill
                 className="cursor-pointer rounded-full"
+                priority quality={75} 
               />
             </Link>
 
@@ -87,6 +88,7 @@ const ThreadCard = ({
                   <Link href={`/thread/${id}`}>
                   <Image src="/assets/reply.svg" alt="heart" width={24}
                     height={24} className="cursor-pointer object-contain"
+                    priority quality={75} 
                   />
                   </Link>
                   {comments.length>0 && <span className="text-[#5c5c7b]">{comments.length}</span>}
@@ -126,7 +128,7 @@ const ThreadCard = ({
               {formatDateString(createdAt)} - {community.name} Community
             </p>
 
-            <Image src={community.image} alt={community.name}
+            <Image src={community.image} alt={community.name} priority quality={75} 
               width={14} height={14} className="ml-1 rounded-full object-cover"/>
           </Link>
         )}

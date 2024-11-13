@@ -8,6 +8,7 @@ import Bottombar from '@/components/shared/Bottombar'
 import { ToastContainer} from 'react-toastify';
 import { NextUIProvider } from '@nextui-org/react';
 import 'react-toastify/dist/ReactToastify.css';
+import Img from "@/public/assets/ThreadsBackground.jpeg"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,6 +28,10 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
+        <link fetchPriority='high' rel="preload" href="@/public/assets/ThreadsBackground.jpeg" as="image"/>
+        <link fetchPriority='high' rel="preload" href="@/public/assets/upload_added.png" as="image"/>
+        <link fetchPriority='high' rel="preload" href="@/public/assets/upload_area.png" as="image"/>
+        <link fetchPriority='high' rel="preload" href="@/public/assets/upload_cancel.png" as="image"/>
       </head>
       <body className={inter.className}>
         <ClerkProvider>
