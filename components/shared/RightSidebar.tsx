@@ -1,13 +1,24 @@
-"use server"
+"use client"
 
 import { topThreeThreads } from '@/lib/actions/thread.actions';
 import { topThreeCommunities } from '@/lib/actions/community.actions';
 import Image from 'next/image';
 import { FaHeart } from "react-icons/fa6";
+import { useEffect, useState } from 'react';
 
-const RightSidebar = async () => {
-  // const response = await topThreeThreads();
-  // const responseCommunity = await topThreeCommunities();
+const RightSidebar = () => {
+  const [response, setResponse] = useState<any>(null);
+  const [responseCommunity, setResponseCommunity] = useState<any>(null);
+
+  useEffect(() => {
+    const loadPayload = async () => {
+      const response = await topThreeThreads();
+      const responseCommunity = await topThreeCommunities();
+      setResponse(response);
+      setResponseCommunity(responseCommunity)
+    }
+    loadPayload();
+  }, []);
 
   return (
     <section className='custom-scrollbar rightsidebar'>
@@ -15,12 +26,12 @@ const RightSidebar = async () => {
         <h3 className='text-heading4-medium text-light-1 mb-1'>
           Suggested Communities
         </h3>
-        {/* <h3 className='text-heading2-medium text-gray-600 italic font-extrabold'>
+        <h3 className='text-heading2-medium text-gray-600 italic font-extrabold'>
           Top Three
         </h3>
         <div className='my-auto'>
         {
-          responseCommunity?.topThreeCommunities.map((community, index) => {
+          responseCommunity?.topThreeCommunities.map((community : any, index : number) => {
             return <article className="mt-3 user-card" key={index}>
             <div className="user-card_avatar">
               <Image src={community.image} alt="logo" width={48} height={48}
@@ -41,19 +52,19 @@ const RightSidebar = async () => {
             </article>
           })
         }
-        </div> */}
+        </div>
       </div>
 
       <div className='flex flex-1 flex-col justify-start'>
         <h3 className='text-heading4-medium text-light-1 mb-1'>
           Suggested Users
         </h3>
-        {/* <h3 className='text-heading2-medium text-gray-600 italic font-extrabold'>
+        <h3 className='text-heading2-medium text-gray-600 italic font-extrabold'>
           Top Three
         </h3>
         <div className='my-auto'>
         {
-          response?.topThreeUsers.map((user, index) => {
+          response?.topThreeUsers.map((user : any, index : number) => {
             return <article className="mt-3 user-card" key={index}>
             <div className="user-card_avatar">
               <Image src={user.image} alt="logo" width={48} height={48}
@@ -74,7 +85,7 @@ const RightSidebar = async () => {
             </article>
           })
         }
-        </div> */}
+        </div>
       </div>
     </section>
   )
