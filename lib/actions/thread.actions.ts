@@ -19,7 +19,7 @@ const s3 = new S3Client({
   }
 });
 const acceptedTypes = ["image" , "video"];
-const maxFileSize = 1024 * 1024 * 40;
+const maxFileSize = 1024 * 1024 * 70;
 
 export async function fetchFrequency() {
   connectToDB();
@@ -431,7 +431,7 @@ export async function getSignedURL(type : string, size : number) {
       return { faliure : "Invalid file type" };
     }
     if(size > maxFileSize) {
-      return { faliure : "File is larger than 40 MB" };
+      return { faliure : "File is larger than 70 MB" };
     }
     
     const putObjectCommand = new PutObjectCommand({
