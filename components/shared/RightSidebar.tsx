@@ -6,9 +6,8 @@ import Image from 'next/image';
 import { FaHeart } from "react-icons/fa6";
 
 const RightSidebar = async () => {
-  const response = await topThreeThreads();
-  const responseCommunity = await topThreeCommunities();
-  console.log("Users ---> ", responseCommunity);
+  // const response = await topThreeThreads();
+  // const responseCommunity = await topThreeCommunities();
 
   return (
     <section className='custom-scrollbar rightsidebar'>
@@ -16,7 +15,7 @@ const RightSidebar = async () => {
         <h3 className='text-heading4-medium text-light-1 mb-1'>
           Suggested Communities
         </h3>
-        <h3 className='text-heading2-medium text-gray-600 italic font-extrabold'>
+        {/* <h3 className='text-heading2-medium text-gray-600 italic font-extrabold'>
           Top Three
         </h3>
         <div className='my-auto'>
@@ -42,14 +41,14 @@ const RightSidebar = async () => {
             </article>
           })
         }
-        </div>
+        </div> */}
       </div>
 
       <div className='flex flex-1 flex-col justify-start'>
         <h3 className='text-heading4-medium text-light-1 mb-1'>
           Suggested Users
         </h3>
-        <h3 className='text-heading2-medium text-gray-600 italic font-extrabold'>
+        {/* <h3 className='text-heading2-medium text-gray-600 italic font-extrabold'>
           Top Three
         </h3>
         <div className='my-auto'>
@@ -75,7 +74,7 @@ const RightSidebar = async () => {
             </article>
           })
         }
-        </div>
+        </div> */}
       </div>
     </section>
   )
