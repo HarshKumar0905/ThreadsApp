@@ -452,3 +452,46 @@ export async function getSignedURL(type : string, size : number) {
     return { faliure : `Error occured  : ${error}` };
   }
 }
+
+export async function topThreeThreads() {
+  try {
+    await connectToDB();
+
+    const users = await User.find({});
+    if (users) {
+      // Calculate total likes for each user's threads
+      const likesArray = await Promise.all(
+        users.map(async (user) => {
+          const likesForUser = await user?.threads?.reduce(async (accumulatorPromise: any, thread: any) => {
+            const accumulator = await accumulatorPromise;  // Resolve accumulator first
+            const threadForUser = await Thread.findById(thread);
+            return accumulator + (threadForUser?.likes?.length || 0);
+          }, Promise.resolve(0));  // Initialize accumulator as a resolved promise with value 0
+
+          return {
+            id: user._id,
+            likes: likesForUser
+          };
+        })
+      );
+
+      // Sort by likes in descending order and select top three
+      const sortedLikesArray = likesArray.sort((a, b) => b.likes - a.likes);
+      const topThreeUsersData = sortedLikesArray.slice(0, 3);
+
+      console.log("Top Three Threads:", topThreeUsersData);
+
+      // Fetch full user details for the top three users based on their ID
+      const topThreeUsers = await Promise.all(
+        topThreeUsersData.map(async (userData: any) => {
+          return await User.findById(userData.id);
+        })
+      );
+
+      return {topThreeUsers, topThreeUsersData};
+    }
+
+  } catch (error: any) {
+    throw new Error(`Failed to fetch top three threads: ${error.message}`);
+  }
+}

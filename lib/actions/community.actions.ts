@@ -318,3 +318,46 @@ export async function deleteCommunity(communityId: string) {
     throw error;
   }
 }
+
+export async function topThreeCommunities() {
+  try {
+    await connectToDB();
+
+    const communities = await Community.find({});
+    if (communities) {
+      // Calculate total likes for each user's threads
+      const likesArray = await Promise.all(
+        communities.map(async (community) => {
+          const likesForCommunity = await community?.threads?.reduce(async (accumulatorPromise: any, thread: any) => {
+            const accumulator = await accumulatorPromise;  // Resolve accumulator first
+            const threadForCommunity = await Thread.findById(thread);
+            return accumulator + (threadForCommunity?.likes?.length || 0);
+          }, Promise.resolve(0));  // Initialize accumulator as a resolved promise with value 0
+
+          return {
+            id: community._id,
+            likes: likesForCommunity
+          };
+        })
+      );
+
+      // Sort by likes in descending order and select top three
+      const sortedLikesArray = likesArray.sort((a, b) => b.likes - a.likes);
+      const topThreeCommunitiesData = sortedLikesArray.slice(0, 3);
+
+      console.log("Top Three Threads:", topThreeCommunitiesData);
+
+      // Fetch full user details for the top three users based on their ID
+      const topThreeCommunities = await Promise.all(
+        topThreeCommunitiesData.map(async (communityData: any) => {
+          return await Community.findById(communityData.id);
+        })
+      );
+
+      return {topThreeCommunities, topThreeCommunitiesData};
+    }
+
+  } catch (error: any) {
+    throw new Error(`Failed to fetch top three threads: ${error.message}`);
+  }
+}
