@@ -2,6 +2,7 @@
 
 import Media from "../models/media.model";
 import Thread from "../models/thread.model";
+import User from "../models/user.model";
 import { connectToDB } from "../mongoose";
 
 interface Props {
