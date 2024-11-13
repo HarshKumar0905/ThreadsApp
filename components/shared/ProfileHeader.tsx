@@ -11,8 +11,6 @@ interface Props {
 }
 
 const ProfileHeader = ({
-  accountId,
-  authUserId,
   name,
   username,
   imgUrl,
