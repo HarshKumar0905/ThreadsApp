@@ -19,13 +19,13 @@ const ReactCoursel = ({mediaFiles} : Props) => {
                   alt="Image Not Found"
                   className="lg:h-56 xl:h-80 2xl:h-96 m-auto flex justify-center items-center rounded-lg
                   border-1.5 border-gray-600"
-                  width={573} height={381} loading="lazy"
+                  width={573} height={381}
                 />
                 </div>
               ) : ( 
                 <div className="flex justify-center items-center m-auto rounded-lg">
                 <video src={media?.url}
-                controls={true} preload="auto"
+                controls={true}
                 className="lg:h-56 xl:h-80 2xl:h-96 m-auto flex justify-center items-center rounded-lg
                border-1.5 border-gray-600"
                 />
