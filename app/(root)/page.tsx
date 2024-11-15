@@ -35,7 +35,7 @@ export default async function Home({
         <div className="flex justify-center">
           <PageComponent count={count} routeType=""/>
         </div>
-        <div><Searchbar routeType="" callIn={50} currentPage={currentPage}/></div>
+        <div><Searchbar routeType="" callIn={50}/></div>
       </div>
 
       <section className="mt-9 flex flex-col gap-10">

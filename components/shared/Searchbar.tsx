@@ -9,10 +9,9 @@ import { Input } from "../ui/input";
 interface Props {
   routeType: string;
   callIn: number;
-  currentPage: string | undefined;
 }
 
-function Searchbar({ routeType, callIn, currentPage }: Props) {
+function Searchbar({ routeType, callIn }: Props) {
   const router = useRouter();
   const [search, setSearch] = useState("");
 
@@ -22,7 +21,7 @@ function Searchbar({ routeType, callIn, currentPage }: Props) {
       if (search) {
         router.push(`/${routeType}?q=` + search);
       } else {
-        router.push(`/?p=` + currentPage!);
+        router.push(`/${routeType}`);
       }
     }, callIn);
 
