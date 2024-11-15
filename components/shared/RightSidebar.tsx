@@ -114,7 +114,7 @@ const RightSidebar = () => {
             (user: any, index: number) => {
               return (
                 <article className="mt-3 user-card cursor-pointer" key={index} 
-                onClick={() => router.push(`/communities/${user.id}`)}>
+                onClick={() => router.push(`/profile/${user.id}`)}>
                   <div className="user-card_avatar">
                     <Image
                       src={user.image}
