@@ -5,6 +5,7 @@ import { fetchFrequency, fetchThreads, MediaFileType } from "@/lib/actions/threa
 import { currentUser } from "@clerk/nextjs/server";
 import Searchbar from "@/components/shared/Searchbar";
 import PageComponent from "@/components/ui/PageComponent";
+import { redirect } from "next/navigation";
 
 export default async function Home({
   searchParams,
@@ -13,12 +14,13 @@ export default async function Home({
 
   const user = await currentUser();
 
-  const currentPage = searchParams.p || "1" ;
+  const currentPage = searchParams.p || "1";
   let result = await fetchThreads(Number(currentPage), 5);
+  let allThreads = await fetchThreads(1, count);
 
   const search = searchParams.q;
   if (search !== undefined) {
-    const newResult = result.threads.filter((thread: any) =>
+    const newResult = allThreads.threads.filter((thread: any) =>
       thread.text.toLowerCase().includes(search?.toLowerCase())
     );
     result.threads = newResult;
@@ -31,9 +33,9 @@ export default async function Home({
           <h1 className="head-text text-left">Home</h1>
         </div>
         <div className="flex justify-center">
-          <PageComponent count={count} routeType="" />
+          <PageComponent count={count} routeType=""/>
         </div>
-        <div><Searchbar routeType="" callIn={50} /></div>
+        <div><Searchbar routeType="" callIn={50} currentPage={currentPage}/></div>
       </div>
 
       <section className="mt-9 flex flex-col gap-10">

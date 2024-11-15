@@ -10,14 +10,14 @@ interface Props {
   routeType : string;
 }
 
-const PageComponent = ({ count, routeType } : Props) => {
+const PageComponent = ({ count, routeType} : Props) => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
 
   // Calculate the total number of pages based on count and pageSize
   const totalPages = Math.ceil(count / 5 );
 
-  const handlePageChange = (page : number) => {
+  const handlePageChange = (page : any) => {
     setCurrentPage(page);  // Update the current page on change
     router.push(`/${routeType}?p=` + page);
   };
