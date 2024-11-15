@@ -6,6 +6,9 @@ import Image from "next/image";
 import { FaHeart } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import {useRouter} from "next/navigation";
+import First from "@/public/assets/1st.png";
+import Second from "@/public/assets/2nd.png";
+import Third from "@/public/assets/3rd.png";
 
 const RightSidebar = () => {
   const [response, setResponse] = useState<any>(null);
@@ -57,16 +60,20 @@ const RightSidebar = () => {
                     />
 
                     <div className="flex-1 text-ellipsis">
+                      <div className="flex gap-1 items-center">
                       <h4 className="text-base-semibold text-light-1">
                         {community.name}
                       </h4>
+                      <img src={index===0 ? First.src : index===1 ? Second.src : Third.src} 
+                      alt="First Image" width={30} height={30} />
+                      </div>
                       <p className="text-small-medium text-gray-1">
                         @{community.username}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 border-l-2 border-gray-600 pl-2">
                     <FaHeart className="cursor-pointer object-contain text-[#ff307c] w-5 h-5" />
                     <p className="text-light-1">
                       {responseCommunity?.topThreeCommunitiesData[index]?.likes}
@@ -115,16 +122,20 @@ const RightSidebar = () => {
                         loading="lazy"
                       />
                       <div className="flex-1 ml-3 text-ellipsis">
+                        <div className="flex gap-1">
                         <h4 className="text-base font-semibold text-light-1">
                           {user.name}
                         </h4>
+                        <img src={index===0 ? First.src : index===1 ? Second.src : Third.src} 
+                        alt="First Image" width={30} height={30} />
+                        </div> 
                         <p className="text-sm text-gray-500">
                           @{user.username}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 border-l-2 border-gray-600 pl-2">
                       <FaHeart className="cursor-pointer text-[#ff307c] w-5 h-5" />
                       <p className="text-light-1">
                         {response?.topThreeUsersData[index]?.likes}
