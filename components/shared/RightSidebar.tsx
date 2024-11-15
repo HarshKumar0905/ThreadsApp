@@ -60,7 +60,7 @@ const RightSidebar = () => {
                     />
 
                     <div className="flex-1 text-ellipsis">
-                      <div className="flex gap-1 items-center">
+                      <div className="flex gap-1 items-center justify-between">
                       <h4 className="text-base-semibold text-light-1">
                         {community.name}
                       </h4>
@@ -122,7 +122,7 @@ const RightSidebar = () => {
                         loading="lazy"
                       />
                       <div className="flex-1 ml-3 text-ellipsis">
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 items-center justify-between">
                         <h4 className="text-base font-semibold text-light-1">
                           {user.name}
                         </h4>
