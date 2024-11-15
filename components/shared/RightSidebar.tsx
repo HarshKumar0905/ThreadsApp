@@ -26,7 +26,7 @@ const RightSidebar = () => {
   }, []);
 
   return (
-    <section className="custom-scrollbar rightsidebar">
+    <section className="custom-scrollbar rightsidebar w-[24%]">
       <div className="flex flex-1 flex-col justify-start">
         <h3 className="text-heading4-medium text-light-1 mb-1">
           Suggested Communities
@@ -60,7 +60,7 @@ const RightSidebar = () => {
                     />
 
                     <div className="flex-1 text-ellipsis">
-                      <div className="flex gap-1 items-center justify-between">
+                      <div className="flex items-center justify-between">
                       <h4 className="text-base-semibold text-light-1">
                         {community.name}
                       </h4>
@@ -121,8 +121,8 @@ const RightSidebar = () => {
                         className="rounded-lg object-cover w-12 h-12"
                         loading="lazy"
                       />
-                      <div className="flex-1 ml-3 text-ellipsis">
-                        <div className="flex gap-1 items-center justify-between">
+                      <div className="flex-1 text-ellipsis">
+                        <div className="flex items-center justify-between">
                         <h4 className="text-base font-semibold text-light-1">
                           {user.name}
                         </h4>
