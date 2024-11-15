@@ -6,11 +6,11 @@ import {
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-// export const metadata = {
-//   title: "Threads",
-//   description: "A Next.js 13 Meta Threads Application",
-//   manifest : "/manifest.json"
-// };
+export const metadata = {
+  title: "Threads",
+  description: "A Next.js 13 Meta Threads Application",
+  manifest : "/manifest.json"
+};
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* <link rel="manifest" href="/manifest.json" /> */}
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body className=
       {`${inter.className} bg-[url('/assets/ThreadsBackground.jpeg')]

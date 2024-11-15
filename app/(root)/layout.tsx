@@ -12,11 +12,11 @@ import Img from "@/public/assets/ThreadsBackground.jpeg"
 
 const inter = Inter({ subsets: ['latin'] })
 
-// export const metadata = {
-//   title: "Threads",
-//   description: "A Next.js 13 Meta Threads Application",
-//   manifest : "/manifest.json"
-// };
+export const metadata = {
+  title: "Threads",
+  description: "A Next.js 13 Meta Threads Application",
+  manifest : "/manifest.json"
+};
 
 export default async function RootLayout({
   children,
@@ -27,11 +27,11 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/manifest.json" />
         <link fetchPriority='high' rel="preload" href="@/public/assets/ThreadsBackground.jpeg" as="image"/>
         <link fetchPriority='high' rel="preload" href="@/public/assets/upload_added.png" as="image"/>
         <link fetchPriority='high' rel="preload" href="@/public/assets/upload_area.png" as="image"/>
-        <link fetchPriority='high' rel="preload" href="@/public/assets/upload_cancel.png" as="image"/> */}
+        <link fetchPriority='high' rel="preload" href="@/public/assets/upload_cancel.png" as="image"/>
       </head>
       <body className={inter.className}>
         <ClerkProvider>
