@@ -68,10 +68,9 @@ const Page = async ({params} : {params : {id : string}}) => {
         </TabsContent>
         <TabsContent value="requests"
         className="w-full text-light-1">
-          <ThreadsTab
-          currentUserId={user.id}
-          accountId={communityDetails._id}
-          accountType="Community" />
+          <p className="h-[60vh] grid place-items-center text-gray-600 italic font-bold text-large">
+                This section is under development
+          </p>
         </TabsContent>
 
       </Tabs>

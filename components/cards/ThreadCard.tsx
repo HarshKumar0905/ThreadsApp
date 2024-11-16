@@ -7,6 +7,7 @@ import { MediaFileType } from "@/lib/actions/thread.actions";
 import ReactCoursel from "../ui/ReactCoursel";
 import { FaEdit } from "react-icons/fa";
 import CopyText from "../shared/CopyText";
+import { fetchUsers } from "@/lib/actions/user.actions";
 
 interface Props {
   id: string;
@@ -34,7 +35,7 @@ interface Props {
   mediaFiles : Array<MediaFileType> | null;
 }
 
-const ThreadCard = ({
+const ThreadCard = async ({
   id,
   currentUserId,
   parentId,
@@ -47,6 +48,11 @@ const ThreadCard = ({
   isComment,
   mediaFiles
 }: Props) => {
+
+  const result = await fetchUsers({
+    userId: currentUserId,
+    pageSize: 25,
+  });
 
   return (
     <article className={`flex w-full flex-col rounded-xl 
@@ -102,11 +108,15 @@ const ThreadCard = ({
                   </Link>
                 }
 
+                <CopyText text={content}/>
+                
                 {
-                  <CopyText text={content}/>
+                  <ModalDelete header={"Share this thread to any user"} 
+                  content={content} id={id} parentId={parentId} result={result}/>
                 }
 
-                {author?.id === currentUserId && <ModalDelete content={content} id={id} parentId={parentId}/>}
+                {author?.id === currentUserId && <ModalDelete header={"You are about to delete this thread"} 
+                content={content} id={id} parentId={parentId} result={result}/>}
               </div>
 
             </div>

@@ -4,7 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-const Page = async () => {
+interface Props {
+  inactive : boolean;
+}
+
+const PageActivity = async ({inactive=false} : Props) => {
   const user = await currentUser();
   if (!user) return null;
   const userInfo = await fetchUser(user.id);
@@ -15,7 +19,9 @@ const Page = async () => {
 
     return (
       <section>
-        <h1 className="head-text mb-10">Activity</h1>
+        {
+          !inactive && <h1 className="head-text mb-10">Activity</h1>
+        }
 
         <div className="mt-10 flex flex-col gap-5">
         {
@@ -46,4 +52,4 @@ const Page = async () => {
     )
   }
   
-export default Page;
+export default PageActivity;

@@ -8,6 +8,7 @@ import { TabsContent } from "@radix-ui/react-tabs";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Spinner } from "@nextui-org/react";
+import PageActivity from "../../activity/page";
 
 const Page = async ({params} : {params : {id : string}}) => {
   const user = await currentUser();
@@ -57,10 +58,17 @@ const Page = async ({params} : {params : {id : string}}) => {
           profileTabs.map((tab) => (
             <TabsContent key={`content-${tab.label}`} value={tab.value}
             className="w-full text-light-1">
+            {
+              tab.label === "Threads" ? 
               <ThreadsTab
               currentUserId={user.id}
               accountId={userInfo.id}
-              accountType="User" />
+              accountType="User" /> : tab.label === "Replies" ?
+              <PageActivity inactive={true}/> : 
+              <p className="h-[50vh] grid place-items-center text-gray-600 italic font-bold text-large">
+                This section is under development
+              </p>
+            }
             </TabsContent>
           ))
         }

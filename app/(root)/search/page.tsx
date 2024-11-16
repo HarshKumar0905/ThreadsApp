@@ -4,8 +4,8 @@ import { fetchUser, fetchUsers } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-const Page = async ({
-  searchParams,
+const SearchPage = async ({
+  searchParams
 }: {searchParams: { [key: string]: string | undefined }}) => {
   const user = await currentUser();
   if (!user) return null;
@@ -33,7 +33,7 @@ return (
               result.users.map((person) => (
                 <UserCard key={person.id} id={person.id}
                 name={person.name} username={person.username}
-                imgUrl={person.image} personType='User' />
+                imgUrl={person.image} personType={'User'} />
               ))
             }
             </>
@@ -43,4 +43,4 @@ return (
   );
 };
 
-export default Page;
+export default SearchPage;
