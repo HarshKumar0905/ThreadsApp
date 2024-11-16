@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
 import {useRouter} from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect} from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import { push, pull } from "@/lib/redux/sharingSlice";
 
 interface Props {
     id : string;
@@ -17,6 +19,22 @@ const UserCard = ({id, name, username, imgUrl, personType} : Props) => {
 
   const router = useRouter();
   const [sharing, setSharing] = useState(false);
+  const items = useSelector((state : any) => state.sharing.items); // Access the items array
+  const dispatch = useDispatch();
+
+  // Log the updated items whenever they change
+  useEffect(() => {
+    console.log("Updated Redux State ---> ", items);
+  }, [items]);
+
+  const handleShare = async () => {
+    if(!sharing){
+      dispatch(push(id));
+    } else {
+      dispatch(pull(id));
+    }
+    setSharing((prevState) => !prevState);
+  }
 
   return (
     <article className={`user-card p-2 ${sharing ? "bg-slate-800 rounded-lg" : "bg-transparent"}`}>
@@ -32,7 +50,7 @@ const UserCard = ({id, name, username, imgUrl, personType} : Props) => {
         </div>
       </div>
 
-      <Button className="user-card_btn" onClick={personType === "ShareUser" ? () => setSharing((prevState) => !prevState) :
+      <Button className="user-card_btn" onClick={personType === "ShareUser" ? () => handleShare() :
       () => router.push(`/profile/${id}`)}>
       {
         personType === "ShareUser" ? sharing ? "Sharing" : "Share" : "View"

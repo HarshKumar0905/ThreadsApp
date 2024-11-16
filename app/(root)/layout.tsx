@@ -8,7 +8,7 @@ import Bottombar from '@/components/shared/Bottombar'
 import { ToastContainer} from 'react-toastify';
 import { NextUIProvider } from '@nextui-org/react';
 import 'react-toastify/dist/ReactToastify.css';
-import Img from "@/public/assets/ThreadsBackground.jpeg"
+import { ReduxProvider } from '@/lib/redux/provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -41,7 +41,9 @@ export default async function RootLayout({
           <LeftSidebar/>
           <section className='main-container w-screen'>
             <div className='w-full max-w-4xl'>
+            <ReduxProvider>
               {children}
+            </ReduxProvider>
             </div>
           </section>
           <RightSidebar />

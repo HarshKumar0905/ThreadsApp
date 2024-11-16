@@ -14,6 +14,8 @@ import { toast } from "react-toastify";
 import { IoClose } from "react-icons/io5";
 import { RiShareFill } from "react-icons/ri";
 import UserCard from "@/components/cards/UserCard";
+import { useSelector, useDispatch } from 'react-redux';
+import { empty } from "@/lib/redux/sharingSlice";
 
 interface Props {
   header: string;
@@ -31,6 +33,7 @@ export default function ModalDelete({
   result
 }: Props) {
   const [onOpen, setOnOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const handleDelete = async () => {
     try {
@@ -45,6 +48,7 @@ export default function ModalDelete({
   const handleShare = async () => {
     try {
       toast.success("Thread shared successfully")
+      dispatch(empty());
       setOnOpen(false);
     } catch (error) {
       toast.error("Failed to share thread");
@@ -86,7 +90,7 @@ export default function ModalDelete({
                   <p>{header}</p>
                   <IoClose
                     className="top-[11px] right-[11px] absolute cursor-pointer"
-                    onClick={() => setOnOpen(false)}
+                    onClick={() => {setOnOpen(false); dispatch(empty()); }}
                   />
                 </div>
               </ModalHeader>
@@ -118,7 +122,7 @@ export default function ModalDelete({
               </ModalBody>
               <ModalFooter>
                 <button
-                  onClick={() => setOnOpen(false)}
+                  onClick={() => {setOnOpen(false); dispatch(empty()); }}
                   className="bg-transparent text-[#ff1b1b] font-bold
                 p-2 rounded-lg"
                 >
