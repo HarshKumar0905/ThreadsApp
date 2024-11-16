@@ -5,11 +5,12 @@ import { fetchFrequency, fetchThreads, MediaFileType } from "@/lib/actions/threa
 import { currentUser } from "@clerk/nextjs/server";
 import Searchbar from "@/components/shared/Searchbar";
 import PageComponent from "@/components/ui/PageComponent";
-import { redirect } from "next/navigation";
+import { Spinner } from "@nextui-org/react";
 
 export default async function Home({
   searchParams,
 }: { searchParams: { [key: string]: string | undefined } }) {
+  let loading = true;
   let count = await fetchFrequency();
 
   const user = await currentUser();
@@ -17,6 +18,7 @@ export default async function Home({
   const currentPage = searchParams.p || "1";
   let result = await fetchThreads(Number(currentPage), 5);
   let allThreads = await fetchThreads(1, count);
+  loading = false;
 
   const search = searchParams.q;
   if (search !== undefined) {
@@ -39,8 +41,10 @@ export default async function Home({
       </div>
 
       <section className="mt-9 flex flex-col gap-10">
-        {result.threads.length === 0 ? (
-          <p className="no-result">No threads found</p>
+        {result.threads.length===0 || loading ? (
+        <div className="h-[60vh] grid place-items-center">
+          <Spinner label="Loading Threads..." color="primary" labelColor="primary" className="scale-125"/>
+        </div>
         ) : (
           result.threads.map((thread : any) => (
             <ThreadCard

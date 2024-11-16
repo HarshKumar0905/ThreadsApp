@@ -12,6 +12,7 @@ import upload_area from "@/public/assets/upload_area.png";
 import upload_added from "@/public/assets/upload_added.png";
 import upload_cancel from "@/public/assets/upload_cancel.png";
 import { editThread } from "@/lib/actions/thread.actions";
+import {Spinner} from "@nextui-org/react";
 
 const PostThread = ({ userId, action, threadMessage }: { userId: string, action : string, threadMessage: string }) => {
   const router = useRouter();
@@ -43,7 +44,7 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
     }
   
     try {
-  
+      setLoading(true);
       if(action==="Create") {
         let fileObject : Array<MediaFileType> = [];
         // Check if files are being uploaded
@@ -103,6 +104,7 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
       toast.error("Failed creating a thread", error.toString());
       console.error("Error in creating thread:", error);
     }
+    setLoading(false);
   };  
 
   const handleAI = async () => {
@@ -114,7 +116,6 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
     }
 
     try {
-      setLoading(true);
       const result = await run(
         thread +
           "---> modify this prompt to sound catchy, treat it as a social media post, keep it's length medium and also don't include options/steps as it doen't look good"
@@ -123,10 +124,12 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
     } catch (error: any) {
       throw new Error(`GEMINI didn't function properly as ${error}`);
     }
-    setLoading(false);
   };
 
   return (
+      loading ? <div className="h-[75vh] grid place-items-center">
+        <Spinner label="Creating Thread..." color="primary" labelColor="primary" className="scale-125"/>
+      </div> : 
     <form
       onSubmit={onSubmitHandler}
       className="mt-8 flex flex-col justify-start gap-10 overflow-hidden"

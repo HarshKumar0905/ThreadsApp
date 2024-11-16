@@ -7,15 +7,22 @@ import { currentUser } from "@clerk/nextjs/server";
 import { TabsContent } from "@radix-ui/react-tabs";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { Spinner } from "@nextui-org/react";
 
 const Page = async ({params} : {params : {id : string}}) => {
   const user = await currentUser();
+  let loading = false;
   if (!user) return null;
+
+  loading = true;
   const userInfo = await fetchUser(params.id);
-
   if (!userInfo?.onboardedStatus) redirect("/onboarding");
-
+  loading = false;
+  
   return (
+    loading ? <div className="h-[75vh] grid place-items-center">
+    <Spinner label="Fetching user profile..." color="primary" labelColor="primary" className="scale-125"/>
+    </div> : 
   <section>
     <ProfileHeader 
       accountId={userInfo.id}
