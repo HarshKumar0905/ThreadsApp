@@ -9,6 +9,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Spinner } from "@nextui-org/react";
 import PageActivity from "../../activity/page";
+import ThreadCard from "@/components/cards/ThreadCard";
 
 const Page = async ({params} : {params : {id : string}}) => {
   const user = await currentUser();
@@ -17,6 +18,8 @@ const Page = async ({params} : {params : {id : string}}) => {
 
   loading = true;
   const userInfo = await fetchUser(params.id);
+  console.log("Info ---> ", userInfo);
+  
   if (!userInfo?.onboardedStatus) redirect("/onboarding");
   loading = false;
   
@@ -25,6 +28,7 @@ const Page = async ({params} : {params : {id : string}}) => {
     <Spinner label="Fetching user profile..." color="primary" labelColor="primary" className="scale-125"/>
     </div> : 
   <section>
+    
     <ProfileHeader 
       accountId={userInfo.id}
       authUserId={user.id}
@@ -65,9 +69,26 @@ const Page = async ({params} : {params : {id : string}}) => {
               accountId={userInfo.id}
               accountType="User" /> : tab.label === "Replies" ?
               <PageActivity inactive={true}/> : 
-              <p className="h-[50vh] grid place-items-center text-gray-600 italic font-bold text-large">
-                This section is under development
-              </p>
+              <div className="mt-8 flex flex-col gap-4">
+              {
+                userInfo?.sharedThreads?.map((thread : any) => {
+                  return (
+                  <ThreadCard
+                  key={thread._id}
+                  id={thread._id}
+                  currentUserId={user?.id || ""}
+                  parentId={thread.parentId}
+                  content={thread.text}
+                  author={thread.author}
+                  likes={thread.likes}
+                  community={thread.community}
+                  createdAt={thread.createdAt}
+                  comments={thread.children}
+                  mediaFiles={thread.mediaFiles}
+                  /> )
+                })
+              }
+              </div>
             }
             </TabsContent>
           ))

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
 import {useRouter} from "next/navigation";
-import { useState, useEffect} from "react";
+import { useState} from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { push, pull } from "@/lib/redux/sharingSlice";
 
@@ -21,11 +21,6 @@ const UserCard = ({id, name, username, imgUrl, personType} : Props) => {
   const [sharing, setSharing] = useState(false);
   const items = useSelector((state : any) => state.sharing.items); // Access the items array
   const dispatch = useDispatch();
-
-  // Log the updated items whenever they change
-  useEffect(() => {
-    console.log("Updated Redux State ---> ", items);
-  }, [items]);
 
   const handleShare = async () => {
     if(!sharing){

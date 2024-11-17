@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import Community from "../models/community.model";
 import Thread from "../models/thread.model";
 import User from "../models/user.model";
-
 import { connectToDB } from "../mongoose";
 import Media from "../models/media.model";
 
@@ -13,10 +12,23 @@ export async function fetchUser(userId: string) {
   try {
     connectToDB();
 
-    return await User.findOne({ id: userId }).populate({
+    const user = await User.findOne({ id: userId }).populate({
       path: "communities",
       model: Community,
+    })
+    .populate({
+      path : "sharedThreads",
+      model : Thread,
+      populate : [{
+        path : "author",
+        model : User,
+      }, {
+        path : "mediaFiles",
+        model : Media
+      }],
     });
+    console.log("Current User --> ", user);
+    return user;
   } catch (error: any) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
@@ -184,5 +196,29 @@ export async function getActivity(userId: string) {
   } catch (error) {
     console.error("Error fetching replies: ", error);
     throw error;
+  }
+}
+
+interface ShareInfo {
+  id: string;
+  user: string;
+}
+
+export async function shareThreadToUser({ id, user }: ShareInfo): Promise<void> {
+  try {
+    // Ensure database connection is established
+    await connectToDB();
+
+    // Update the user's threads or a specific field in the User schema
+    const updateResult = await User.findOneAndUpdate(
+      { id : user },  // Assuming `id` is the `_id` of the user document
+      { $push: {sharedThreads : id} }, // Replace `sharedThreads` with the appropriate field
+      { new: true }  // Option to return the updated document
+    );
+    if (!updateResult) {
+      throw new Error(`User with ID ${id} not found.`);
+    }
+  } catch (error: any) {
+    throw new Error(`Failed to share thread to user: ${error.message}`);
   }
 }

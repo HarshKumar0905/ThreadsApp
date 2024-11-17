@@ -112,11 +112,11 @@ const ThreadCard = async ({
                 
                 {
                   <ModalDelete header={"Share this thread to any user"} 
-                  content={content} id={id} parentId={parentId} result={result}/>
+                  content={content} id={id.toString()} parentId={parentId} result={result}/>
                 }
 
                 {author?.id === currentUserId && <ModalDelete header={"You are about to delete this thread"} 
-                content={content} id={id} parentId={parentId} result={result}/>}
+                content={content} id={id.toString()} parentId={parentId} result={result}/>}
               </div>
 
             </div>

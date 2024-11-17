@@ -16,6 +16,7 @@ import { RiShareFill } from "react-icons/ri";
 import UserCard from "@/components/cards/UserCard";
 import { useSelector, useDispatch } from 'react-redux';
 import { empty } from "@/lib/redux/sharingSlice";
+import { shareThreadToUser } from "@/lib/actions/user.actions";
 
 interface Props {
   header: string;
@@ -34,6 +35,7 @@ export default function ModalDelete({
 }: Props) {
   const [onOpen, setOnOpen] = useState(false);
   const dispatch = useDispatch();
+  const items = useSelector((state : any) => state.sharing.items); // Access the items array
 
   const handleDelete = async () => {
     try {
@@ -47,13 +49,31 @@ export default function ModalDelete({
 
   const handleShare = async () => {
     try {
-      toast.success("Thread shared successfully")
-      dispatch(empty());
-      setOnOpen(false);
-    } catch (error) {
+      console.log("Share list ---> ", items);
+  
+      // Validate that there are users selected
+      if (!items || items.length === 0) {
+        toast.error("No user selected");
+        return;
+      }
+  
+      // Loop through selected users and share the thread
+      for (let i = 0; i < items.length; i++) {
+        const user: string = items[i];
+        await shareThreadToUser({ id, user });
+        console.log("User Added:", user);
+      }
+  
+      // Success message and cleanup
+      toast.success("Thread shared successfully");
+      dispatch(empty()); // Clear the list of selected users
+      setOnOpen(false); // Close modal or UI element
+    } catch (error: any) {
+      console.error("Error sharing thread:", error);
       toast.error("Failed to share thread");
     }
   };
+  
 
   return (
     <>

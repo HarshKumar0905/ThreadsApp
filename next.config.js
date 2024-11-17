@@ -8,6 +8,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   disable : false
 });
 const nextConfig = {
+  reactStrictMode: false,
     typescript : {
       ignoreBuildErrors : true,
     },
@@ -40,6 +41,16 @@ const nextConfig = {
           hostname: "placehold.co",
         },
       ],
+    },
+    webpack(config, { isServer }) {
+      if (!isServer) {
+      config.ignoreWarnings = [
+        {
+          message: /Only plain objects can be passed to Client Components/, // Suppress specific warning
+        },
+      ];
+    }
+      return config;
     },
   };
   
