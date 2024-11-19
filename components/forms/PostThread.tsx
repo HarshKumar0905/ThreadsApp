@@ -223,7 +223,7 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
           <div
             className="relative inline-flex items-center justify-center px-4 py-2 text-lg font-bold
             text-white transition-all duration-200 bg-gray-900 font-pj rounded-xl focus:outline-none 
-            focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+            focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 cursor-pointer"
             onClick={() => handleAI()}
           >
             {loading ? (

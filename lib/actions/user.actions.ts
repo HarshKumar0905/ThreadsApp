@@ -222,3 +222,13 @@ export async function shareThreadToUser({ id, user }: ShareInfo): Promise<void> 
     throw new Error(`Failed to share thread to user: ${error.message}`);
   }
 }
+
+export async function deleteSuggestion({id, currentUserId} : {id : string, currentUserId : string}) {
+  try {
+    connectToDB();
+
+    await User.findOneAndUpdate({id : currentUserId}, {$pull : {sharedThreads : id}}, {new : true});
+  } catch (error : any) {
+    throw new Error(`Failed to delete the suggested thread`)
+  }
+}

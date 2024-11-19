@@ -18,7 +18,6 @@ const Page = async ({params} : {params : {id : string}}) => {
 
   loading = true;
   const userInfo = await fetchUser(params.id);
-  console.log("Info ---> ", userInfo);
   
   if (!userInfo?.onboardedStatus) redirect("/onboarding");
   loading = false;
@@ -85,6 +84,7 @@ const Page = async ({params} : {params : {id : string}}) => {
                   createdAt={thread.createdAt}
                   comments={thread.children}
                   mediaFiles={thread.mediaFiles}
+                  sharedThread={true}
                   /> )
                 })
               }

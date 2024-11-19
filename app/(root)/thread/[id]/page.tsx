@@ -32,6 +32,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
           createdAt={thread.createdAt}
           comments={thread.children}
           mediaFiles={thread?.mediaFiles}
+          sharedThread={false}
         />
       </div>
 
@@ -59,6 +60,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
             comments={childItem.children}
             mediaFiles={childItem?.mediaFiles}
             isComment
+            sharedThread={false}
           />
         ))}
       </div>

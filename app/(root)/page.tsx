@@ -59,6 +59,7 @@ export default async function Home({
               createdAt={thread.createdAt}
               comments={thread.children}
               mediaFiles={thread.mediaFiles}
+              sharedThread={false}
             />
           ))
         )}

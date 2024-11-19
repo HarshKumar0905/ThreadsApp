@@ -8,6 +8,7 @@ import ReactCoursel from "../ui/ReactCoursel";
 import { FaEdit } from "react-icons/fa";
 import CopyText from "../shared/CopyText";
 import { fetchUsers } from "@/lib/actions/user.actions";
+import ModalShare from "@/components/shared/ModalShare";
 
 interface Props {
   id: string;
@@ -33,6 +34,7 @@ interface Props {
   likes: string[];
   isComment?: boolean,
   mediaFiles : Array<MediaFileType> | null;
+  sharedThread : boolean;
 }
 
 const ThreadCard = async ({
@@ -46,7 +48,8 @@ const ThreadCard = async ({
   comments,
   likes,
   isComment,
-  mediaFiles
+  mediaFiles,
+  sharedThread
 }: Props) => {
 
   const result = await fetchUsers({
@@ -74,11 +77,16 @@ const ThreadCard = async ({
           </div>
 
           <div className="flex w-full flex-col">
+            <div className="flex justify-between items-center flex-wrap gap-2">
             <Link href={`/profile/${author?.id}`} className="w-fit">
               <h4 className="cursor-pointer text-base-semibold text-light-1">
                 {author?.name}
               </h4>
             </Link>
+            {
+              sharedThread && <ModalShare content={content} id={id} currentUserId={currentUserId}/>
+            }
+            </div>
 
             <p className="mt-2 text-small-regular text-light-2">{content}</p>
 
