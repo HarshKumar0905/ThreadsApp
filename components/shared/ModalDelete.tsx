@@ -150,7 +150,7 @@ export default function ModalDelete({
                 </button>
                 <button
                   color="primary"
-                  onClick={header.substring(0, 5) ? () => handleShare() : () => handleDelete()}
+                  onClick={header.substring(0, 5) === "Share" ? () => handleShare() : () => handleDelete()}
                   className="bg-[#6f4ef2] hover:bg-[#ff1b1b] text-white font-bold
                 transition-all duration-200 p-2 rounded-lg"
                 >
