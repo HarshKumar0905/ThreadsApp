@@ -20,6 +20,7 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
   const { organization } = useOrganization();
   const [thread, setThread] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingDiv, setLoadingDiv] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [wordError, setWordError] = useState<string | null>(null);
 
@@ -44,7 +45,7 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
     }
   
     try {
-      setLoading(true);
+      setLoadingDiv(true);
       if(action==="Create") {
         let fileObject : Array<MediaFileType> = [];
         // Check if files are being uploaded
@@ -104,11 +105,12 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
       toast.error("Failed creating a thread", error.toString());
       console.error("Error in creating thread:", error);
     }
-    setLoading(false);
+    setLoadingDiv(false);
   };  
 
   const handleAI = async () => {
     setWordError(null);
+    setLoading(true);
     const wordCount = thread.trim().length;
     if (wordCount < 3) {
       setWordError("Please enter at least 3 words.");
@@ -118,16 +120,17 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
     try {
       const result = await run(
         thread +
-          "---> modify this prompt to sound catchy, treat it as a social media post, keep it's length medium and also don't include options/steps as it doen't look good"
+          "---> modify this prompt to sound catchy, treat it as a social media post, keep it's length MEDIUM, also don't include options and 'GIVE A SINGLE RESPONSE'"
       );
       setThread(result);
     } catch (error: any) {
       throw new Error(`GEMINI didn't function properly as ${error}`);
     }
+    setLoading(false);
   };
 
   return (
-      loading ? <div className="h-[75vh] grid place-items-center">
+      loadingDiv ? <div className="h-[75vh] grid place-items-center">
         <Spinner label="Creating Thread..." color="primary" labelColor="primary" className="scale-125"/>
       </div> : 
     <form
