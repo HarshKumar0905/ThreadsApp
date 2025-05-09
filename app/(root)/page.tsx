@@ -41,11 +41,16 @@ export default async function Home({
       </div>
 
       <section className="mt-9 flex flex-col gap-10">
-        {result.threads.length===0 || loading ? (
+        {loading ? (
         <div className="h-[60vh] grid place-items-center">
           <Spinner label="Loading Threads..." color="primary" labelColor="primary" className="scale-125"/>
         </div>
-        ) : (
+        ) :  
+        result.threads.length === 0 ? (
+        <h2 className="h-[60vh] grid place-items-center font-extrabold text-gray-1 head-text">
+          No threads to be shown
+        </h2>
+        ): (
           result.threads.map((thread : any) => (
             <ThreadCard
               key={thread._id}

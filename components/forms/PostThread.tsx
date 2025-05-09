@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { createThread, getSignedURL, MediaFileType } from "@/lib/actions/thread.actions";
+import { createThread, MediaFileType } from "@/lib/actions/thread.actions";
 import { useOrganization } from "@clerk/nextjs";
 import { run } from "@/lib/validations/generator";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import upload_added from "@/public/assets/upload_added.png";
 import upload_cancel from "@/public/assets/upload_cancel.png";
 import { editThread } from "@/lib/actions/thread.actions";
 import {Spinner} from "@nextui-org/react";
+import axios from "axios";
 
 const PostThread = ({ userId, action, threadMessage }: { userId: string, action : string, threadMessage: string }) => {
   const router = useRouter();
@@ -33,6 +34,33 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
   const handleFileChange = (e: any) => {
     setFiles(Array.from(e.target.files));
   };
+
+  const uploadFileToCloudinary = async (file: File) => {
+    try {
+      if (!["image", "video"].includes(file.type.split('/')[0])) {
+        return { failure: "Invalid file type" };
+      } 
+      if (file.size > 70 * 1024 * 1024) { // 70 MB in bytes
+        return { failure: "File is larger than 70 MB" };
+      }
+  
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', "UnsecureUpload");
+      formData.append('folder', userId);
+      const name = process.env.NEXT_PUBLIC_CLOUDINARY_NAME;
+      const resourceType = file.type.split("/")[0] === "image" ? "image" : "video"
+ 
+      const res = await fetch
+      (`https://api.cloudinary.com/v1_1/${name}/${resourceType}/upload`, { method: 'POST', body: formData });
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw new Error("Not able to upload file to Cloudinary");
+    }
+  };
+  
 
   const onSubmitHandler = async (e: any) => {
     e.preventDefault();
@@ -59,23 +87,22 @@ const PostThread = ({ userId, action, threadMessage }: { userId: string, action 
         const file = files[i];
         
         // Get signed URL for file upload
-        const signedURLResult = await getSignedURL(file.type, file.size);
-        const url = signedURLResult?.success?.url;
-        const viewUrl = url?.split("?")[0];
+        const signedURLResult = await uploadFileToCloudinary(file);
+        console.log("Result --> ", signedURLResult);
   
         if (signedURLResult?.faliure) {
-          toast.error(signedURLResult.faliure + "AWS s3 error");
+          toast.error("Cloudinary image upload error");
           return;
         }
   
         // Upload the file using the signed URL
-        await fetch(url! , {
-          method: "PUT",
-          body: file,
-          headers: { "Content-Type": file.type },
-        });
+        // await fetch(signedURLResult.secure_url! , {
+        //   method: "PUT",
+        //   body: file,
+        //   headers: { "Content-Type": file.type },
+        // });
 
-        fileObject.push({ type : file.type.substring(0, 5), url : viewUrl! });
+        fileObject.push({ type : file.type.substring(0, 5), url : signedURLResult.secure_url! });
         i++; // Move to the next file
         }
 

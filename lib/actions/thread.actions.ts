@@ -6,20 +6,21 @@ import User from "../models/user.model";
 import Thread from "../models/thread.model";
 import Community from "../models/community.model";
 import Media from "../models/media.model";
-import { PutObjectCommand, S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
-import { currentUser } from "@clerk/nextjs/server";
 import { ObjectId } from "mongoose";
+import {v2 as cloudinary} from "cloudinary";
 
-const s3 = new S3Client({
-  region : process.env.AWS_BUCKET_REGION!,
-  credentials : {
-    accessKeyId : process.env.AWS_ACCESS_KEY_DEP!,
-    secretAccessKey : process.env.AWS_SECRET_ACCESS_KEY!
+const connectCloudinary = async () => {
+  try {
+      await cloudinary.config({
+          cloud_name : process.env.NEXT_PUBLIC_CLOUDINARY_NAME,
+          api_key : process.env.CLOUDINARY_API_KEY,
+          api_secret : process.env.CLOUDINARY_SECRET_KEY
+      });
+  } catch (error) {
+      console.log(error);
   }
-});
-const acceptedTypes = ["image" , "video"];
-const maxFileSize = 1024 * 1024 * 70;
+  
+}
 
 export async function fetchFrequency() {
   connectToDB();
@@ -358,6 +359,7 @@ export async function removeLikeFromThread(id: String, userId: String) {
 export async function removeThread(id : String, parentId : String | null) {
   try {
     await connectToDB();
+    await connectCloudinary();
 
     // Find the thread to be deleted (the main thread)
     const mainThread = await Thread.findById(id);
@@ -369,12 +371,12 @@ export async function removeThread(id : String, parentId : String | null) {
       console.log("Media ID : ", media);
       const mediaItem = await Media.findByIdAndDelete(media, {new : true});
 
-      // Delete media from s3 bucket
-      const deleteObjectCommand = new DeleteObjectCommand({
-        Bucket : process.env.AWS_BUCKET_NAME!,
-        Key : mediaItem.url.split("/").pop()!
-      });
-      await s3.send(deleteObjectCommand);
+      // Delete media from cloudinary storage
+      console.log("Media Deleting --> ", mediaItem.url.split("/").at(-2)+"/"+
+      mediaItem.url.split("/").at(-1).split(".").at(0));
+
+      await cloudinary.uploader.destroy(mediaItem.url.split("/").at(-2)+"/"+
+      mediaItem.url.split("/").at(-1).split(".").at(0), {resource_type : mediaItem.type});
     });
 
     const deleteThreadRecursively = async (id : String) => {
@@ -407,49 +409,6 @@ export async function removeThread(id : String, parentId : String | null) {
   await deleteThreadRecursively(id);
   } catch (error : any) {
     throw new Error(`Failed to delete the thread ${error.message}`);
-  }
-}
-
-function generateRandomWord(length : number) {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  let randomWord = '';
-  for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      randomWord += characters[randomIndex];
-  }
-  return randomWord;
-}
-
-// This is used to return URL that client can use to send the file to s3
-export async function getSignedURL(type : string, size : number) {
-  try {
-    const user = await currentUser();
-    if(!user) {
-      return { faliure : "User not signed in" };
-    }
-    if(!acceptedTypes.includes(type.substring(0, 5))) {
-      return { faliure : "Invalid file type" };
-    }
-    if(size > maxFileSize) {
-      return { faliure : "File is larger than 70 MB" };
-    }
-    
-    const putObjectCommand = new PutObjectCommand({
-      Bucket : process.env.AWS_BUCKET_NAME!,
-      Key : generateRandomWord(10),
-      ContentType : type,
-      ContentLength : size,
-      Metadata : {
-        userId : user.id,
-      }
-    });
-    const signedURL = await getSignedUrl(s3, putObjectCommand, {
-      expiresIn : 300
-    });
-    console.log("Signed URL --> ", signedURL);
-    return { success : { url : signedURL, viewUrl : signedURL.split("?")[0] } };
-  } catch (error : any) {
-    return { faliure : `Error occured  : ${error}` };
   }
 }
 
